@@ -1,0 +1,9 @@
+target/
+*.class
+.idea/
+*.jpg
+*/logs
+logs
+*.orig
+!defaultPicture.jpg
+!user-logo.jpg
