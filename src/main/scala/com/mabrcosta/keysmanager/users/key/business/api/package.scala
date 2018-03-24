@@ -13,6 +13,6 @@ package object api {
   type ErrorEither[A] = Error Either A
   type _errorEither[R] = ErrorEither |= R
 
-  type KeyStack = Fx.fx3[OwnerReader[?], ErrorEither[?], TimedFuture]
+  type KeysStack = Fx.fx3[OwnerReader[?], ErrorEither[?], TimedFuture]
 
 }

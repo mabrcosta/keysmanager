@@ -4,6 +4,8 @@ scalaVersion := "2.12.4"
 
 scalacOptions += "-Ypartial-unification"
 
+resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases"
+
 libraryDependencies ++= {
   val slickV = "3.2.2"
   val akkaHttpV = "10.1.0"
@@ -21,7 +23,9 @@ libraryDependencies ++= {
     "org.atnos"                     %%  "eff"                         % "5.1.0",
     "com.typesafe.akka"             %%  "akka-http"                   % akkaHttpV,
     "com.typesafe.akka"             %%  "akka-http-spray-json"        % akkaHttpV,
-    "com.typesafe.akka"             %%  "akka-stream"                 % "2.5.11"
+    "com.typesafe.akka"             %%  "akka-stream"                 % "2.5.11",
+    "org.scalatest"                 %%  "scalatest"                   % "3.0.5"     % Test,
+    "org.mockito"                   %   "mockito-core"                % "2.16.0"    % Test
   )
 }
 

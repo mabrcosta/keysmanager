@@ -4,7 +4,7 @@ import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import com.mabrcosta.keysmanager.users.key.business.api
-import com.mabrcosta.keysmanager.users.key.business.api.{KeyStack, KeysService}
+import com.mabrcosta.keysmanager.users.key.business.api.{KeysStack, KeysService}
 import com.mabrcosta.keysmanager.users.key.data.KeyData
 import com.typesafe.scalalogging.LazyLogging
 import javax.inject.Inject
@@ -24,14 +24,14 @@ class KeysHttpService @Inject()(private val keyService: KeysService[DBIO, TimedF
 
   val routes: Route = pathPrefix("users" / JavaUUID / "keys") { uidOwner =>
     get {
-      onComplete(runAsync(keyService.getForOwner[KeyStack].runReader(uidOwner).runEither)) {
+      onComplete(runAsync(keyService.getForOwner[KeysStack].runReader(uidOwner).runEither)) {
         case Success(Right(keys)) => complete(keys)
         case Success(Left(error)) => errorMapping(error)
         case Failure(ex)          => complete(InternalServerError, ex.getMessage)
       }
     } ~ post {
       entity(as[KeyData]) { key =>
-        onComplete(runAsync(keyService.addKey[KeyStack](key.value).runReader(uidOwner).runEither)) {
+        onComplete(runAsync(keyService.addKey[KeysStack](key.value).runReader(uidOwner).runEither)) {
           case Success(Right(res))  => complete(res)
           case Success(Left(error)) => errorMapping(error)
           case Failure(ex)          => complete(InternalServerError, ex.getMessage)
@@ -39,7 +39,7 @@ class KeysHttpService @Inject()(private val keyService: KeysService[DBIO, TimedF
       }
     } ~ path(JavaUUID) { uidKey =>
       delete {
-        onComplete(runAsync(keyService.deleteKey[KeyStack](uidKey).runReader(uidOwner).runEither)) {
+        onComplete(runAsync(keyService.deleteKey[KeysStack](uidKey).runReader(uidOwner).runEither)) {
           case Success(Right(true))  => complete("")
           case Success(Right(false)) => complete(InternalServerError)
           case Success(Left(error))  => errorMapping(error)
