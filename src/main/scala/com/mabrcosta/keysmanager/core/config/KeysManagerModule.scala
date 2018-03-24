@@ -2,14 +2,15 @@ package com.mabrcosta.keysmanager.core.config
 
 import java.net.URI
 
-import com.google.inject.{AbstractModule, Provides, TypeLiteral}
-import com.mabrcosta.keysmanager.core.data.{ServerAPIConfiguration, ServerConfiguration}
+import com.google.inject.{Provides, TypeLiteral}
 import com.mabrcosta.keysmanager.core.config.properties.ServerProperties
+import com.mabrcosta.keysmanager.core.data.{ServerAPIConfiguration, ServerConfiguration}
 import com.mabrcosta.keysmanager.core.persistence.PersistenceSchema
 import com.mabrcosta.keysmanager.core.persistence.util.DatabaseMigratorInfo
 import com.mabrcosta.keysmanager.users.key.business.KeyServiceImpl
 import com.mabrcosta.keysmanager.users.key.business.api.KeyService
-import com.mabrcosta.keysmanager.users.key.persistence.{KeysDal, KeysRepository}
+import com.mabrcosta.keysmanager.users.key.persistence.KeysRepository
+import com.mabrcosta.keysmanager.users.key.persistence.api.KeysDal
 import com.typesafe.config.Config
 import javax.inject.Singleton
 import net.codingwell.scalaguice.{ScalaModule, ScalaMultibinder}
