@@ -29,6 +29,18 @@ class KeysRepository @Inject()(private val jdbcProfile: JdbcProfile)
         updateTimestamp) <> (Key.tupled, Key.unapply)
   }
 
-  def getForOwner(uidOwner: UUID): DBIO[Seq[Key]] = tableQuery.filter(_.uidOwnerSubject === uidOwner).result
+  private lazy val findForOwnerCompiled = Compiled(
+    (uidOwner: Rep[UUID]) => tableQuery.filter(_.uidOwnerSubject === uidOwner))
+
+  def findForOwner(uidOwner: UUID): DBIO[Seq[Key]] = findForOwnerCompiled(uidOwner).result
+
+  private lazy val findForUIDAndOwnerCompiled = Compiled(
+    (uid: Rep[UUID], uidOwner: Rep[UUID]) =>
+      tableQuery
+        .filter(_.id === uid)
+        .filter(_.uidOwnerSubject === uidOwner))
+
+  def findForOwner(uid: UUID, uidOwner: UUID): DBIO[Option[Key]] =
+    findForUIDAndOwnerCompiled(uid, uidOwner).result.headOption
 
 }

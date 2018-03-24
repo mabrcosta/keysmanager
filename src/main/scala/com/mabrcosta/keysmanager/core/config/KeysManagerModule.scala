@@ -14,6 +14,8 @@ import com.mabrcosta.keysmanager.users.key.persistence.api.KeysDal
 import com.typesafe.config.Config
 import javax.inject.Singleton
 import net.codingwell.scalaguice.{ScalaModule, ScalaMultibinder}
+import org.atnos.eff.ExecutorServices
+import org.atnos.eff.concurrent.Scheduler
 import slick.dbio.DBIO
 
 import scala.collection.JavaConverters._
@@ -44,5 +46,9 @@ class KeysManagerModule extends ScalaModule {
 
     ServerConfiguration(baseURL, port, corsAllowedMethods.asScala.toList, api)
   }
+
+  @Provides
+  @Singleton
+  def provideEffectsScheduler: Scheduler = ExecutorServices.schedulerFromGlobalExecutionContext
 
 }

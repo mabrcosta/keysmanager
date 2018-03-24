@@ -9,10 +9,10 @@ import org.atnos.eff.future._future
 
 trait KeyService {
 
-  def getForOwner[R: _future: _errorEither](uidOwner: UUID): Eff[R, Seq[Key]]
+  def getForOwner[R: _ownerReader : _future: _errorEither]: Eff[R, Seq[Key]]
 
-  def addKey[R: _future: _errorEither](uidOwner: UUID, keyValue: String): Eff[R, Key]
+  def addKey[R: _ownerReader : _future: _errorEither](keyValue: String): Eff[R, Key]
 
-  def deleteKey[R: _future: _errorEither](uid: UUID): Eff[R, Boolean]
+  def deleteKey[R: _ownerReader : _future: _errorEither](uid: UUID): Eff[R, Boolean]
 
 }

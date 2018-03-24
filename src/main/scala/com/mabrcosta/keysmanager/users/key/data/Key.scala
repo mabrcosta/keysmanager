@@ -5,7 +5,7 @@ import java.util.UUID
 
 import com.mabrcosta.keysmanager.core.data.BaseRepositoryEntity
 
-case class Key(id: Option[UUID] = None,
+case class Key(id: Option[UUID] = Some(UUID.randomUUID()),
                value: String,
                uidOwnerSubject: UUID,
                uidCreatorSubject: Option[UUID] = None,
