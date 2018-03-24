@@ -22,7 +22,7 @@ import scala.util.{Failure, Success}
 class KeysHttpService @Inject()(private val keyService: KeysService[DBIO, TimedFuture],
                                 implicit val executionContext: ExecutionContext,
                                 implicit val scheduler: Scheduler)
-    extends KeyJsonSupport
+    extends KeysJsonSupport
     with LazyLogging {
 
   val routes: Route = pathPrefix("users" / JavaUUID / "keys") { uidOwner =>

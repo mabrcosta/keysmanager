@@ -5,19 +5,19 @@ import java.util.UUID
 import com.mabrcosta.keysmanager.core.persistence.util.{EffectsDatabaseActionExecutor, EffectsDatabaseExecutor}
 import com.mabrcosta.keysmanager.users.key.business.api.KeysStack
 import org.atnos.eff.concurrent.Scheduler
-import org.atnos.eff.{Eff, ExecutorServices, TimedFuture}
 import org.atnos.eff.future.{_future, fromFuture, runAsync}
-import org.mockito.Mockito
 import org.atnos.eff.syntax.all._
-import org.scalatest.{Assertion, AsyncWordSpec}
+import org.atnos.eff.{Eff, ExecutorServices, TimedFuture}
+import org.mockito.Mockito
 import org.scalatest.mockito.MockitoSugar
+import org.scalatest.{Assertion, AsyncWordSpec}
 import slick.dbio.{DBIO, DBIOAction}
 
 import scala.concurrent.Future
 
-trait AbstractSpec extends AsyncWordSpec with MockitoSugar {
+trait AbstractServiceSpec extends AsyncWordSpec with MockitoSugar {
 
-  implicit val executor: Scheduler = ExecutorServices.schedulerFromGlobalExecutionContext
+  implicit val scheduler: Scheduler = ExecutorServices.schedulerFromGlobalExecutionContext
 
   val effectsDatabaseExecutor: EffectsDatabaseExecutor[DBIO, TimedFuture] =
     mock[EffectsDatabaseExecutor[DBIO, TimedFuture]]
@@ -69,6 +69,5 @@ trait AbstractSpec extends AsyncWordSpec with MockitoSugar {
   def runStack[T](effect: Eff[KeysStack, T], uidOwner: UUID): Future[Either[api.Error, T]] = {
     runAsync(effect.runReader(uidOwner).runEither)
   }
-
 
 }

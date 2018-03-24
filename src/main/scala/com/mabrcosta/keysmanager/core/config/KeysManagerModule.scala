@@ -19,7 +19,7 @@ import org.atnos.eff.concurrent.Scheduler
 import slick.dbio.DBIO
 
 import scala.collection.JavaConverters._
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 
 class KeysManagerModule extends ScalaModule {
 
@@ -39,9 +39,10 @@ class KeysManagerModule extends ScalaModule {
   @Singleton
   def providesDBIOFutureKeysService(
       keysDal: KeysDal[DBIO],
-      effectsDatabaseExecutor: EffectsDatabaseExecutor[DBIO, TimedFuture]): KeysService[DBIO, TimedFuture] = {
+      effectsDatabaseExecutor: EffectsDatabaseExecutor[DBIO, TimedFuture],
+      executionContext: ExecutionContext): KeysService[DBIO, TimedFuture] = {
 
-    new KeysServiceImpl[DBIO, TimedFuture](keysDal, effectsDatabaseExecutor, ExecutionContext.global)
+    new KeysServiceImpl[DBIO, TimedFuture](keysDal, effectsDatabaseExecutor, executionContext)
   }
 
   @Provides
@@ -58,6 +59,10 @@ class KeysManagerModule extends ScalaModule {
 
     ServerConfiguration(baseURL, port, corsAllowedMethods.asScala.toList, api)
   }
+
+  @Provides
+  @Singleton
+  def provideExecutionContext: ExecutionContext = ExecutionContext.global
 
   @Provides
   @Singleton

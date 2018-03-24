@@ -13,7 +13,7 @@ import slick.dbio.{DBIO, DBIOAction}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class KeysServiceSpec extends AsyncWordSpec with AbstractSpec {
+class KeysServiceSpec extends AsyncWordSpec with AbstractServiceSpec {
 
   val keysDal: KeysDal[DBIO] = mock[KeysDal[DBIO]]
   val keyService = new KeysServiceImpl[DBIO, TimedFuture](keysDal, effectsDatabaseExecutor, executionContext)
