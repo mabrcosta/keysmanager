@@ -1,4 +1,4 @@
-package com.mabrcosta.keysmanager.core.persistence
+package com.mabrcosta.keysmanager.core.persistence.util
 
 import java.sql.Timestamp
 import java.time._

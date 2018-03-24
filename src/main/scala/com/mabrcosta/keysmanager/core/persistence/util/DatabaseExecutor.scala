@@ -1,11 +1,11 @@
-package com.mabrcosta.keysmanager.core.persistence
+package com.mabrcosta.keysmanager.core.persistence.util
 
-import slick.jdbc.JdbcProfile
 import org.atnos.eff.Eff
 import org.atnos.eff.future._
 import slick.dbio.{DBIO => SlickDBIO}
+import slick.jdbc.JdbcProfile
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 trait DatabaseExecutor[MDBIO[_], Stack[_]] {
   def execute[T, R: Stack](action: MDBIO[T])(implicit ec: ExecutionContext): Eff[R, T]

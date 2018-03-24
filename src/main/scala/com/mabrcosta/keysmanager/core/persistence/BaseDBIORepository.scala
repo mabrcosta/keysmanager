@@ -4,6 +4,7 @@ import java.time.Instant
 import java.util.UUID
 
 import com.byteslounge.slickrepo.meta.Entity
+import com.mabrcosta.keysmanager.core.persistence.util.DateMapper
 import slick.ast.BaseTypedType
 import slick.jdbc.{JdbcProfile, JdbcType}
 

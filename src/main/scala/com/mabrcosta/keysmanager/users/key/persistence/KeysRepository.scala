@@ -2,7 +2,8 @@ package com.mabrcosta.keysmanager.users.key.persistence
 
 import java.util.UUID
 
-import com.mabrcosta.keysmanager.core.persistence.{BaseDBIORepository, DatabaseDal}
+import com.mabrcosta.keysmanager.core.persistence.{BaseDBIORepository, DatabaseDal, PersistenceSchema}
+import com.mabrcosta.keysmanager.users.key.data.Key
 import javax.inject.Inject
 import slick.ast.BaseTypedType
 import slick.dbio.{DBIO => SlickDBIO}
@@ -22,16 +23,15 @@ class KeysRepository @Inject()(private val jdbcProfile: JdbcProfile)
   val tableQuery = TableQuery[Keys]
   val pkType = implicitly[BaseTypedType[UUID]]
 
-  class Keys(tag: Tag) extends BaseRepositoryTable(tag, None, "keys") {
+  class Keys(tag: Tag) extends BaseRepositoryTable(tag, Some(PersistenceSchema.schema), "keys") {
     def value = column[String]("value")
-
-    def ownerSubjectId = column[UUID]("owner_subject_id")
+    def uidOwnerSubject = column[UUID]("uid_owner_subject")
 
     def * =
-      (id, value, ownerSubjectId, uidCreatorSubject, uidLastModifierSubject, creationTimestamp,
+      (id.?, value, uidOwnerSubject, uidCreatorSubject, uidLastModifierSubject, creationTimestamp,
         updateTimestamp) <> (Key.tupled, Key.unapply)
   }
 
-  def getForOwner(uidOwner: UUID): DBIO[Seq[Key]] = tableQuery.filter(_.ownerSubjectId === uidOwner).result
+  def getForOwner(uidOwner: UUID): DBIO[Seq[Key]] = tableQuery.filter(_.uidOwnerSubject === uidOwner).result
 
 }

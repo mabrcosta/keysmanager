@@ -21,7 +21,7 @@ libraryDependencies ++= {
     "org.atnos"                     %%  "eff"                         % "5.1.0",
     "com.typesafe.akka"             %%  "akka-http"                   % akkaHttpV,
     "com.typesafe.akka"             %%  "akka-http-spray-json"        % akkaHttpV,
-    "com.typesafe.akka"             %% "akka-stream"                  % "2.5.11"
+    "com.typesafe.akka"             %%  "akka-stream"                 % "2.5.11"
   )
 }
 

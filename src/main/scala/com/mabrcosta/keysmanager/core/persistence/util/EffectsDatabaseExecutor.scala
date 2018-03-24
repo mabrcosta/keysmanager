@@ -1,4 +1,4 @@
-package com.mabrcosta.keysmanager.core.persistence
+package com.mabrcosta.keysmanager.core.persistence.util
 
 import org.atnos.eff.future._future
 import org.atnos.eff.{Eff, FutureEffect}

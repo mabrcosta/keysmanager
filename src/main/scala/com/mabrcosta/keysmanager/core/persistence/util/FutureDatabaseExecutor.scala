@@ -1,4 +1,4 @@
-package com.mabrcosta.keysmanager.core.persistence
+package com.mabrcosta.keysmanager.core.persistence.util
 
 import slick.dbio.{DBIO => SlickDBIO}
 import slick.jdbc.JdbcProfile

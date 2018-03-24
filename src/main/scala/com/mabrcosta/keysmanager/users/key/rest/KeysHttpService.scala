@@ -1,59 +1,42 @@
 package com.mabrcosta.keysmanager.users.key.rest
 
-import java.time.Instant
-import java.util.UUID
-
-import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
+import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
-import com.mabrcosta.keysmanager.users.key.business.{KeyService, KeyStack}
-import com.mabrcosta.keysmanager.users.key.persistence.Key
-import org.atnos.eff._
+import akka.http.scaladsl.server.{ExceptionHandler, Route}
+import com.mabrcosta.keysmanager.users.key.business.api.{KeyService, KeyStack}
+import com.typesafe.scalalogging.LazyLogging
+import javax.inject.Inject
 import org.atnos.eff.FutureInterpretation._
+import org.atnos.eff._
 import org.atnos.eff.concurrent.Scheduler
-import spray.json.{DefaultJsonProtocol, DeserializationException, JsString, JsValue, JsonFormat, RootJsonFormat}
-import syntax.all._
+import org.atnos.eff.syntax.all._
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.Success
+import scala.util.{Failure, Success}
 
-trait KeyJsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
-  implicit object UUIDFormat extends JsonFormat[UUID] {
-    def write(uuid: UUID) = JsString(uuid.toString)
-    def read(value: JsValue) = {
-      value match {
-        case JsString(uuid) => UUID.fromString(uuid)
-        case _              => throw DeserializationException("Expected hexadecimal UUID string")
-      }
-    }
-  }
-
-  implicit object InstantFormat extends JsonFormat[Instant] {
-    import java.time.format.DateTimeFormatter
-    val formatter: DateTimeFormatter = DateTimeFormatter.ISO_INSTANT
-
-    def write(instant: Instant) = JsString(instant.toString)
-    def read(value: JsValue) = {
-      value match {
-        case JsString(instant) => Instant.from(formatter.parse(instant))
-        case _              => throw DeserializationException("Expected hexadecimal UUID string")
-      }
-    }
-  }
-
-  implicit val keyFormat: RootJsonFormat[Key] = jsonFormat7(Key)
-}
-
-class KeysHttpService(private val keyService: KeyService) extends KeyJsonSupport {
+class KeysHttpService @Inject()(private val keyService: KeyService) extends KeyJsonSupport with LazyLogging {
 
   implicit val scheduler: Scheduler = ExecutorServices.schedulerFromGlobalExecutionContext
 
-  def getUserKeys = path("user" / JavaUUID / "keys") { uidOwner =>
-    get {
-        onComplete(runAsync(keyService.getForOwner[KeyStack](uidOwner).runEither)) {
-          case Success(Left(keys)) => complete(keys)
-          case _ => reject
-        }
+  implicit def myExceptionHandler: ExceptionHandler =
+    ExceptionHandler {
+      case ex: Throwable => {
+        logger.error(ex.getMessage, ex)
+        complete(InternalServerError)
+      }
     }
-  }
+
+  val routes: Route =
+    handleExceptions(myExceptionHandler) {
+      path("users" / JavaUUID / "keys") { uidOwner =>
+        get {
+          onComplete(runAsync(keyService.getForOwner[KeyStack](uidOwner).runEither)) {
+            case Success(Right(keys)) => complete(keys)
+            case Success(Left(_))     => complete(NotFound)
+            case Failure(ex)          => complete(InternalServerError, ex.getMessage)
+          }
+        }
+      }
+    }
 
 }
