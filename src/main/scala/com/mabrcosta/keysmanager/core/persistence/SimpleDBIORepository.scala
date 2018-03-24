@@ -5,8 +5,6 @@ import com.byteslounge.slickrepo.repository.Repository
 import slick.dbio.{DBIO => SlickDBIO}
 import slick.jdbc.JdbcProfile
 
-import scala.concurrent.ExecutionContext
-
 abstract class SimpleDBIORepository[TEntity <: Entity[TEntity, TKey], TKey](val profile: JdbcProfile)
     extends Repository[TEntity, TKey](profile)
     with DatabaseDal[TEntity, TKey, SlickDBIO] {
@@ -21,15 +19,15 @@ abstract class SimpleDBIORepository[TEntity <: Entity[TEntity, TKey], TKey](val 
 
   private lazy val existsCompiled = Compiled((id: Rep[TKey]) => tableQuery.filter(_.id === id).exists)
 
-  override def exists(id: TKey)(implicit ec: ExecutionContext): DBIO[Boolean] = {
+  override def exists(id: TKey): DBIO[Boolean] = {
     existsCompiled(id).result
   }
 
-  override def find(id: TKey)(implicit ec: ExecutionContext): DBIO[Option[TEntity]] = {
-    super.findOne(id)
+  override def find(id: TKey): DBIO[Option[TEntity]] = {
+    findOneCompiled(id).result.headOption
   }
 
-  override def find(ids: Seq[TKey])(implicit ec: ExecutionContext): DBIO[Seq[TEntity]] = {
+  override def find(ids: Seq[TKey]): DBIO[Seq[TEntity]] = {
     tableQuery.filter(_.id inSet ids).result
   }
 

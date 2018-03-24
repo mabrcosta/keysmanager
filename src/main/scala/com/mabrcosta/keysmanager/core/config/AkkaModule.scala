@@ -36,7 +36,7 @@ class AkkaModule extends ScalaModule {
   @Provides
   @Singleton
   def provideActorSystem(injector: Injector): ActorSystem = {
-    val system = ActorSystem("rolodexActorSystem")
+    val system = ActorSystem("keysmanagerActorSystem")
     // initialize and register extension to allow akka to create actors using Guice
     GuiceAkkaExtension(system).initialize(injector)
     system

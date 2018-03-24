@@ -12,7 +12,7 @@ import slick.jdbc.JdbcProfile
 class JdbcPersistenceModule extends ScalaModule {
 
   override def configure(): Unit = {
-    bind[DatabaseMigrator]
+    bind[DatabaseMigrator].in(classOf[Singleton])
   }
 
   @Provides

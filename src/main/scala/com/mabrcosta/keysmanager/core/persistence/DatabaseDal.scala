@@ -1,20 +1,18 @@
 package com.mabrcosta.keysmanager.core.persistence
 
 import com.byteslounge.slickrepo.meta.Entity
-import slick.jdbc.JdbcProfile
 
 import scala.concurrent.ExecutionContext
 
 trait DatabaseDal[TEntity <: Entity[TEntity, TKey], TKey, TIO[_]] {
-  implicit protected val profile: JdbcProfile
 
   def count(): TIO[Int]
 
-  def exists(id: TKey)(implicit ec: ExecutionContext): TIO[Boolean]
+  def exists(id: TKey): TIO[Boolean]
 
   def findAll()(implicit ec: ExecutionContext): TIO[Seq[TEntity]]
-  def find(id: TKey)(implicit ec: ExecutionContext): TIO[Option[TEntity]]
-  def find(ids: Seq[TKey])(implicit ec: ExecutionContext): TIO[Seq[TEntity]]
+  def find(id: TKey): TIO[Option[TEntity]]
+  def find(ids: Seq[TKey]): TIO[Seq[TEntity]]
 
   def save(entity: TEntity)(implicit ec: ExecutionContext): TIO[TEntity]
 
