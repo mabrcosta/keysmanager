@@ -23,6 +23,8 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 
 class KeysManagerModule extends ScalaModule {
 
+  val migrationsResourcesPackage = "com.mabrcosta.keysmanager.migration"
+
   private lazy val migrationsBinder = ScalaMultibinder.newSetBinder[DatabaseMigratorInfo](binderAccess)
   protected[this] def addMigrationInfo: DatabaseMigratorInfo => Unit = migrationsBinder.addBinding.toInstance(_)
 
@@ -32,7 +34,7 @@ class KeysManagerModule extends ScalaModule {
       .to(classOf[EffDbExecutorDBIOFuture])
       .in(classOf[Singleton])
 
-    addMigrationInfo(DatabaseMigratorInfo(PersistenceSchema.schema, Seq("com.mabrcosta.keysmanager.migration")))
+    addMigrationInfo(DatabaseMigratorInfo(PersistenceSchema.schema, Seq(migrationsResourcesPackage)))
   }
 
   @Provides

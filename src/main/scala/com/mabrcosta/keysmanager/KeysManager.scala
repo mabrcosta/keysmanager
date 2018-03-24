@@ -11,15 +11,14 @@ import com.mabrcosta.keysmanager.users.key.rest.KeysHttpService
 import com.typesafe.scalalogging.LazyLogging
 
 object KeysManager extends App with LazyLogging {
-
-  val injector = Guice.createInjector(
-    new AkkaModule,
-    new ConfigModule,
-    new JdbcPersistenceModule,
-    new KeysManagerModule
-  )
-
   try {
+    val injector = Guice.createInjector(
+      new AkkaModule,
+      new ConfigModule,
+      new JdbcPersistenceModule,
+      new KeysManagerModule
+    )
+
     import net.codingwell.scalaguice.InjectorExtensions._
 
     implicit val system: ActorSystem = injector.instance[ActorSystem]
@@ -34,5 +33,4 @@ object KeysManager extends App with LazyLogging {
   } catch {
     case e: Throwable => logger.error(e.getMessage, e)
   }
-
 }
