@@ -1,4 +1,4 @@
-# effects-akka-http-slick
+# Extensible Effects Akka-Http Slick
 The Extensible Effects Akka-Http Slick is a simple json rest api to act as practical example of one way to use the Eff monad and extensible effects on an scala application.
 
 It supports the following features:
@@ -33,28 +33,28 @@ create a new database on it and configure it on ```src/main/resources/applicatio
 There's already a configuration example for postgreSQL on the file.
 
 
-##### Testing
+#### Testing
 
 To run all tests:
 
 
         $ sbt test
 
-##### API Usage
+#### API Usage
 
 Creating data:
 ```
 curl -X POST \
     http://localhost:9881/users/0d3fcc37-d330-4c7c-8d82-128235617d7d/keys \
     -H 'Content-Type: application/json' \
-    -d '{ "value":"the_key" }'
+    -d '{"value":"the_key" }'
 ```
 
 Getting data: 
 ```
 curl -X GET \
   http://localhost:9881/users/0d3fcc37-d330-4c7c-8d82-128235617d7d/keys 
- ```
+```
 
 Deleting data:
 ```
