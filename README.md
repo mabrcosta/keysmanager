@@ -63,7 +63,7 @@ curl -X DELETE \
 ```
 
 ### Extensible Effects Resources
-For anyone looking for additional information on the Eff monad and extensible effects here's some good resources you might consider looking into:
+If you're interested in additional information on the Eff monad and extensible effects these are some good resources you might consider looking into:
 
 * Oleg Kiselyov's [Freer monads, more extensible effects](http://okmij.org/ftp/Haskell/extensible/more.pdf)
 * Eric Torreborre's talk [The Eff monad, one monad to rule them all](https://vimeo.com/channels/flatmap2016/165927840)

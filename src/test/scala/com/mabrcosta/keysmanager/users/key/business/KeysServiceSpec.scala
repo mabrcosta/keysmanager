@@ -67,13 +67,20 @@ class KeysServiceSpec extends AsyncWordSpec with AbstractServiceSpec {
   "Deleting keys" when {
     "deleting a non-existent key for owner and uid" should {
       "return a NotFound error" in {
+        val keysDal: KeysDal[DBIO] = mock[KeysDal[DBIO]]
+        val keyService = new KeysServiceImpl[DBIO, TimedFuture](keysDal, effectsDatabaseExecutor, executionContext)
+
         val uidKey = UUID.randomUUID()
         val response: Option[Key] = None
         mockDbInteraction(keysDal.findForOwner(uidKey, uidOwner), response)
-        assertLeft[Boolean](keyService.deleteKey[KeysStack](uidKey), uidOwner, {
+        val res = assertLeft[Boolean](keyService.deleteKey[KeysStack](uidKey), uidOwner, {
           case NotFound(_) => succeed
           case res         => fail(res.toString)
         })
+        Mockito.verify(keysDal).findForOwner(uidKey, uidOwner)
+        Mockito.verifyNoMoreInteractions(keysDal)
+
+        res
       }
     }
     "deleting a valid key for owner and uid" should {
