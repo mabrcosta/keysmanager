@@ -1,10 +1,8 @@
-create table keys (
-  uid uuid not null,
-  value varchar(255) not null,
-  uid_owner_subject uuid not null,
-  creation_timestamp timestamp without time zone not null,
-  update_timestamp timestamp without time zone not null,
-  uid_creator_subject uuid,
-  uid_last_modifier_subject uuid,
-  constraint pk_keys primary key (uid)
-);
+create table "public"."keys" (
+    "uid" UUID NOT NULL PRIMARY KEY,
+    "value" VARCHAR NOT NULL,
+    "uid_owner_subject" UUID NOT NULL,
+    "uid_creator_subject" UUID,
+    "uid_last_modifier_subject" UUID,
+    "creation_timestamp" TIMESTAMP NOT NULL,
+    "update_timestamp" TIMESTAMP NOT NULL);

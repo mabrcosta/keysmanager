@@ -64,10 +64,6 @@ class KeysManagerModule extends ScalaModule {
 
   @Provides
   @Singleton
-  def provideExecutionContext: ExecutionContext = ExecutionContext.global
-
-  @Provides
-  @Singleton
   def provideEffectsScheduler: Scheduler = ExecutorServices.schedulerFromGlobalExecutionContext
 
 }

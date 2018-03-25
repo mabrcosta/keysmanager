@@ -45,5 +45,5 @@ class DatabaseMigrator @Inject()(migrators: Set[DatabaseMigratorInfo],
     flyway.migrate()
   }
 
-  migrators.foreach(migrate(_))
+  migrators.foreach(migrate)
 }
