@@ -1,4 +1,4 @@
-package com.mabrcosta.keysmanager.users.key.business
+package com.mabrcosta.keysmanager.users.business
 
 import java.util.UUID
 

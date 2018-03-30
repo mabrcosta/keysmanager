@@ -1,13 +1,13 @@
-package com.mabrcosta.keysmanager.users.key.rest
+package com.mabrcosta.keysmanager.users.rest
 
 import java.util.UUID
 
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import com.mabrcosta.keysmanager.users.key.business.api
-import com.mabrcosta.keysmanager.users.key.business.api.{KeysService, KeysStack}
-import com.mabrcosta.keysmanager.users.key.data.{Key, KeyData}
+import com.mabrcosta.keysmanager.users.business.api
+import com.mabrcosta.keysmanager.users.business.api.{KeysService, KeysStack}
+import com.mabrcosta.keysmanager.users.data.{Key, KeyData}
 import com.typesafe.scalalogging.LazyLogging
 import javax.inject.Inject
 import org.atnos.eff.FutureInterpretation._

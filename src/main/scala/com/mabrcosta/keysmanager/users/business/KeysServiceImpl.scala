@@ -1,11 +1,11 @@
-package com.mabrcosta.keysmanager.users.key.business
+package com.mabrcosta.keysmanager.users.business
 
 import java.util.UUID
 
 import com.mabrcosta.keysmanager.core.persistence.util.EffectsDatabaseExecutor
-import com.mabrcosta.keysmanager.users.key.business.api.{KeysService, NotFound, _errorEither, _ownerReader}
-import com.mabrcosta.keysmanager.users.key.data.Key
-import com.mabrcosta.keysmanager.users.key.persistence.api.KeysDal
+import com.mabrcosta.keysmanager.users.business.api.{KeysService, NotFound, _errorEither, _ownerReader}
+import com.mabrcosta.keysmanager.users.data.Key
+import com.mabrcosta.keysmanager.users.persistence.api.KeysDal
 import javax.inject.Inject
 import org.atnos.eff.Eff
 import org.atnos.eff.EitherEffect._

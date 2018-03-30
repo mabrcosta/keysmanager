@@ -7,7 +7,7 @@ import com.google.inject.Guice
 import com.mabrcosta.keysmanager.core.config._
 import com.mabrcosta.keysmanager.core.data.ServerConfiguration
 import com.mabrcosta.keysmanager.core.persistence.util.DatabaseMigrator
-import com.mabrcosta.keysmanager.users.key.rest.KeysHttpService
+import com.mabrcosta.keysmanager.users.rest.KeysHttpService
 import com.typesafe.scalalogging.LazyLogging
 
 object KeysManager extends App with LazyLogging {

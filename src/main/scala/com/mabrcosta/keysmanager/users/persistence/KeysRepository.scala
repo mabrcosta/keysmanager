@@ -1,10 +1,10 @@
-package com.mabrcosta.keysmanager.users.key.persistence
+package com.mabrcosta.keysmanager.users.persistence
 
 import java.util.UUID
 
 import com.mabrcosta.keysmanager.core.persistence.{BaseDBIORepository, PersistenceSchema}
-import com.mabrcosta.keysmanager.users.key.data.Key
-import com.mabrcosta.keysmanager.users.key.persistence.api.KeysDal
+import com.mabrcosta.keysmanager.users.data.Key
+import com.mabrcosta.keysmanager.users.persistence.api.KeysDal
 import javax.inject.Inject
 import slick.ast.BaseTypedType
 import slick.dbio.{DBIO => SlickDBIO}

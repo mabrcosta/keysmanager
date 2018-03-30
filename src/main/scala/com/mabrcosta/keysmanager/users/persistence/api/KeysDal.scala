@@ -1,9 +1,9 @@
-package com.mabrcosta.keysmanager.users.key.persistence.api
+package com.mabrcosta.keysmanager.users.persistence.api
 
 import java.util.UUID
 
 import com.mabrcosta.keysmanager.core.persistence.DatabaseDal
-import com.mabrcosta.keysmanager.users.key.data.Key
+import com.mabrcosta.keysmanager.users.data.Key
 
 trait KeysDal[TIO[_]] extends DatabaseDal[Key, UUID, TIO] {
 

@@ -1,7 +1,7 @@
-package com.mabrcosta.keysmanager.users.key.rest
+package com.mabrcosta.keysmanager.users.rest
 
 import com.mabrcosta.keysmanager.core.rest.CoreSprayJsonSupport
-import com.mabrcosta.keysmanager.users.key.data.{Key, KeyData}
+import com.mabrcosta.keysmanager.users.data.{Key, KeyData}
 import spray.json.RootJsonFormat
 
 trait KeysJsonSupport extends CoreSprayJsonSupport {

@@ -1,4 +1,4 @@
-package com.mabrcosta.keysmanager.users.key.business.api
+package com.mabrcosta.keysmanager.users.business.api
 
 sealed trait Error {
   val message: String

@@ -7,10 +7,10 @@ import com.mabrcosta.keysmanager.core.config.properties.ServerProperties
 import com.mabrcosta.keysmanager.core.data.{ServerAPIConfiguration, ServerConfiguration}
 import com.mabrcosta.keysmanager.core.persistence.PersistenceSchema
 import com.mabrcosta.keysmanager.core.persistence.util.{DatabaseMigratorInfo, EffDbExecutorDBIOFuture, EffectsDatabaseExecutor}
-import com.mabrcosta.keysmanager.users.key.business.KeysServiceImpl
-import com.mabrcosta.keysmanager.users.key.business.api.KeysService
-import com.mabrcosta.keysmanager.users.key.persistence.KeysRepository
-import com.mabrcosta.keysmanager.users.key.persistence.api.KeysDal
+import com.mabrcosta.keysmanager.users.business.KeysServiceImpl
+import com.mabrcosta.keysmanager.users.business.api.KeysService
+import com.mabrcosta.keysmanager.users.persistence.KeysRepository
+import com.mabrcosta.keysmanager.users.persistence.api.KeysDal
 import com.typesafe.config.Config
 import javax.inject.Singleton
 import net.codingwell.scalaguice.{ScalaModule, ScalaMultibinder}

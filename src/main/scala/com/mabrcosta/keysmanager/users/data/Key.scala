@@ -1,4 +1,4 @@
-package com.mabrcosta.keysmanager.users.key.data
+package com.mabrcosta.keysmanager.users.data
 
 import java.time.Instant
 import java.util.UUID

@@ -1,8 +1,8 @@
-package com.mabrcosta.keysmanager.users.key.business.api
+package com.mabrcosta.keysmanager.users.business.api
 
 import java.util.UUID
 
-import com.mabrcosta.keysmanager.users.key.data.Key
+import com.mabrcosta.keysmanager.users.data.Key
 import org.atnos.eff.{Eff, |=}
 
 trait KeysService[TDBIO[_], TDBOut[_]] {
