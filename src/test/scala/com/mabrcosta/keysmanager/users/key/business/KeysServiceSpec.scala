@@ -2,9 +2,10 @@ package com.mabrcosta.keysmanager.users.key.business
 
 import java.util.UUID
 
-import com.mabrcosta.keysmanager.users.key.business.api.{KeysStack, NotFound}
-import com.mabrcosta.keysmanager.users.key.data.Key
-import com.mabrcosta.keysmanager.users.key.persistence.api.KeysDal
+import com.mabrcosta.keysmanager.users.business.KeysServiceImpl
+import com.mabrcosta.keysmanager.users.business.api.{KeysStack, NotFound}
+import com.mabrcosta.keysmanager.users.data.Key
+import com.mabrcosta.keysmanager.users.persistence.api.KeysDal
 import org.atnos.eff.TimedFuture
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.{ArgumentMatcher, ArgumentMatchers, Mockito}

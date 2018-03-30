@@ -3,7 +3,8 @@ package com.mabrcosta.keysmanager.users.key.business
 import java.util.UUID
 
 import com.mabrcosta.keysmanager.core.persistence.util.{EffectsDatabaseActionExecutor, EffectsDatabaseExecutor}
-import com.mabrcosta.keysmanager.users.key.business.api.KeysStack
+import com.mabrcosta.keysmanager.users.business.api
+import com.mabrcosta.keysmanager.users.business.api.KeysStack
 import org.atnos.eff.concurrent.Scheduler
 import org.atnos.eff.future.{_future, fromFuture, runAsync}
 import org.atnos.eff.syntax.all._

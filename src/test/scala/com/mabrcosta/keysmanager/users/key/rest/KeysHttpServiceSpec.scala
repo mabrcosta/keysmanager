@@ -4,9 +4,10 @@ import java.util.UUID
 
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import com.mabrcosta.keysmanager.users.key.business.api
-import com.mabrcosta.keysmanager.users.key.business.api.{KeysService, KeysStack, NotFound}
-import com.mabrcosta.keysmanager.users.key.data.{Key, KeyData}
+import com.mabrcosta.keysmanager.users.business.api
+import com.mabrcosta.keysmanager.users.business.api.{KeysService, KeysStack, NotFound}
+import com.mabrcosta.keysmanager.users.data.{Key, KeyData}
+import com.mabrcosta.keysmanager.users.rest.KeysHttpService
 import org.atnos.eff.{Eff, EitherCreation, ExecutorServices, TimedFuture}
 import org.mockito.{ArgumentMatchers, Mockito}
 import org.scalatest.mockito.MockitoSugar
@@ -17,7 +18,7 @@ import scala.concurrent.ExecutionContext
 
 class KeysHttpServiceSpec extends AsyncWordSpec with ScalatestRouteTest with Matchers with MockitoSugar {
 
-  import KeysJsonSupport._
+  import com.mabrcosta.keysmanager.users.rest.KeysJsonSupport._
 
   val keyService: KeysService[DBIO, TimedFuture] = mock[KeysService[DBIO, TimedFuture]]
 
@@ -98,7 +99,6 @@ class KeysHttpServiceSpec extends AsyncWordSpec with ScalatestRouteTest with Mat
     "deleting a valid key for owner and uid" should {
       "return true" in {
         val uidKey = UUID.randomUUID()
-        val error = NotFound(s"Unable to find key with uid $uidKey")
 
         Mockito
           .when(
