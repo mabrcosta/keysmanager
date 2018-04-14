@@ -1,4 +1,4 @@
-package com.mabrcosta.keysmanager.core.config
+package com.mabrcosta.keysmanager
 
 import java.net.URI
 
@@ -6,7 +6,7 @@ import com.google.inject.{Provides, TypeLiteral}
 import com.mabrcosta.keysmanager.core.config.properties.ServerProperties
 import com.mabrcosta.keysmanager.core.data.{ServerAPIConfiguration, ServerConfiguration}
 import com.mabrcosta.keysmanager.core.persistence.PersistenceSchema
-import com.mabrcosta.keysmanager.core.persistence.util.{DatabaseMigratorInfo, EffDbExecutorDBIOFuture, EffectsDatabaseExecutor}
+import com.mabrcosta.keysmanager.core.persistence.util.{DatabaseMigratorInfo, EffDbExecutorDBIOFuture, EffDbExecutorId, EffectsDatabaseExecutor}
 import com.mabrcosta.keysmanager.users.business.KeysServiceImpl
 import com.mabrcosta.keysmanager.users.business.api.KeysService
 import com.mabrcosta.keysmanager.users.persistence.KeysRepository
@@ -14,12 +14,12 @@ import com.mabrcosta.keysmanager.users.persistence.api.KeysDal
 import com.typesafe.config.Config
 import javax.inject.Singleton
 import net.codingwell.scalaguice.{ScalaModule, ScalaMultibinder}
-import org.atnos.eff.{ExecutorServices, TimedFuture}
 import org.atnos.eff.concurrent.Scheduler
+import org.atnos.eff.{ExecutorServices, TimedFuture}
 import slick.dbio.DBIO
 
 import scala.collection.JavaConverters._
-import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
+import scala.concurrent.ExecutionContext
 
 class KeysManagerModule extends ScalaModule {
 
@@ -39,12 +39,20 @@ class KeysManagerModule extends ScalaModule {
 
   @Provides
   @Singleton
-  def providesDBIOFutureKeysService(
-      keysDal: KeysDal[DBIO],
-      effectsDatabaseExecutor: EffectsDatabaseExecutor[DBIO, TimedFuture],
-      executionContext: ExecutionContext): KeysService[DBIO, TimedFuture] = {
+  def providesDBIOFutureKeysService(keysDal: KeysDal[DBIO],
+                                    effectsDatabaseExecutor: EffectsDatabaseExecutor[DBIO, TimedFuture],
+                                    executionContext: ExecutionContext): KeysService[DBIO, TimedFuture] = {
 
     new KeysServiceImpl[DBIO, TimedFuture](keysDal, effectsDatabaseExecutor, executionContext)
+  }
+
+  @Provides
+  @Singleton
+  def providesDBIOKeysService(keysDal: KeysDal[DBIO],
+                              effectsDatabaseExecutor: EffDbExecutorId[DBIO],
+                              executionContext: ExecutionContext): KeysService[DBIO, DBIO] = {
+
+    new KeysServiceImpl[DBIO, DBIO](keysDal, effectsDatabaseExecutor, executionContext)
   }
 
   @Provides

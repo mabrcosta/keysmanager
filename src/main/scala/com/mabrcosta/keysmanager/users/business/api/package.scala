@@ -4,6 +4,7 @@ import java.util.UUID
 
 import cats.data.Reader
 import org.atnos.eff.{Fx, TimedFuture, |=}
+import slick.dbio.DBIO
 
 package object api {
 
@@ -14,5 +15,7 @@ package object api {
   type _errorEither[R] = ErrorEither |= R
 
   type KeysStack = Fx.fx3[OwnerReader[?], ErrorEither[?], TimedFuture]
+
+  type KeysDBIOStack = Fx.fx4[OwnerReader[?], ErrorEither[?], DBIO, TimedFuture]
 
 }

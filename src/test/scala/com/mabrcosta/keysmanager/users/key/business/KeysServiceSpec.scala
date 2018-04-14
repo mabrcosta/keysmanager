@@ -2,19 +2,21 @@ package com.mabrcosta.keysmanager.users.key.business
 
 import java.util.UUID
 
+import com.mabrcosta.keysmanager.core.persistence.util.{EffectsDatabaseActionExecutor, EffectsDatabaseExecutor}
 import com.mabrcosta.keysmanager.users.business.KeysServiceImpl
-import com.mabrcosta.keysmanager.users.business.api.{KeysStack, NotFound}
+import com.mabrcosta.keysmanager.users.business.api._
 import com.mabrcosta.keysmanager.users.data.Key
 import com.mabrcosta.keysmanager.users.persistence.api.KeysDal
-import org.atnos.eff.TimedFuture
+import org.atnos.eff.MemberIn._
+import org.atnos.eff.{Eff, TimedFuture}
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.{ArgumentMatcher, ArgumentMatchers, Mockito}
-import org.scalatest.AsyncWordSpec
 import slick.dbio.{DBIO, DBIOAction}
+import com.mabrcosta.keysmanager.core.persistence.util.DBIOEffect._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class KeysServiceSpec extends AsyncWordSpec with AbstractServiceSpec {
+class KeysServiceSpec extends AbstractServiceSpec {
 
   val keysDal: KeysDal[DBIO] = mock[KeysDal[DBIO]]
   val keyService = new KeysServiceImpl[DBIO, TimedFuture](keysDal, effectsDatabaseExecutor, executionContext)
@@ -88,7 +90,7 @@ class KeysServiceSpec extends AsyncWordSpec with AbstractServiceSpec {
       "return true" in {
         val uidKey = UUID.randomUUID()
         val response = Key(id = Some(uidKey), value = "key_value", uidOwnerSubject = uidOwner)
-        mockDbInteraction(keysDal.findForOwner(uidKey, uidOwner), Some(response))
+        mockDbInteractionDBIO[KeysDBIOStack, Option[Key]](keysDal.findForOwner(uidKey, uidOwner), Some(response))
         mockDbInteraction(keysDal.delete(response), response)
         assertRight[Boolean](keyService.deleteKey[KeysStack](uidKey), uidOwner, result => if (result) succeed else fail)
       }
@@ -97,5 +99,27 @@ class KeysServiceSpec extends AsyncWordSpec with AbstractServiceSpec {
 
   def keyValueArgumentMatcher(keyValue: String): ArgumentMatcher[Key] =
     (argument: Key) => if (keyValue == argument.value) true else false
+
+  val effectsDBIODatabaseExecutor: EffectsDatabaseExecutor[DBIO, DBIO] =
+    mock[EffectsDatabaseExecutor[DBIO, DBIO]]
+
+//  type _dbio[R] = DBIOAction[?, NoStream, Effect.All] |= R
+//  type KeysDBIOStack = Fx.fx3[OwnerReader[?], ErrorEither[?], DBIOAction[?, NoStream, Effect.All]]
+
+//  implicit def memberin[R]: MemberIn[DBIO, R] = MemberIn
+
+  def mockDbInteractionDBIO[R: _dbio, T](methodCall: DBIO[T], returnValue: T): Unit = {
+    val dbAction = DBIOAction.successful(returnValue)
+
+    Mockito.when(methodCall).thenReturn(dbAction)
+    mockDatabaseExecutorDBIO[R, T](dbAction, returnValue)
+  }
+
+  def mockDatabaseExecutorDBIO[R: _dbio, T](action: DBIO[T], returnValue: T): Unit = {
+    val actionExecutor = mock[EffectsDatabaseActionExecutor[DBIO, DBIO, T]]
+
+    Mockito.when(effectsDBIODatabaseExecutor.apply(action)).thenReturn(actionExecutor)
+    Mockito.when(actionExecutor.execute[R]).thenReturn(Eff.send[DBIO, R, T](action))
+  }
 
 }

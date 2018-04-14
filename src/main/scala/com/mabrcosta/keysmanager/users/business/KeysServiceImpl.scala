@@ -21,14 +21,14 @@ class KeysServiceImpl[TDBIO[_], TDBOut[_]] @Inject()(
 
   import effectsDatabaseExecutor._
 
-  override def getForOwner[R: _tDBOut: _ownerReader: _errorEither]: Eff[R, Seq[Key]] = {
+  override def getForOwner[R: _tDBOut: _ownerReader]: Eff[R, Seq[Key]] = {
     for {
       uidOwner <- ask
       keys <- keysDal.findForOwner(uidOwner).execute
     } yield keys
   }
 
-  override def addKey[R: _tDBOut: _ownerReader: _errorEither](keyValue: String): Eff[R, Key] = {
+  override def addKey[R: _tDBOut: _ownerReader](keyValue: String): Eff[R, Key] = {
     for {
       uidOwner <- ask
       key = Key(value = keyValue, uidOwnerSubject = uidOwner)
