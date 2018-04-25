@@ -2,18 +2,19 @@ package com.mabrcosta.keysmanager.core.persistence.util
 
 import org.atnos.eff.Interpret.translate
 import org.atnos.eff._
-import slick.dbio.DBIO
+import slick.dbio.{DBIO => SlickDBIO}
+import slick.jdbc.JdbcBackend
 
 object DBIOEffect extends DBIOCreation with DBIOInterpretation
 
 trait DBIOTypes {
-  type _dbio[R] = DBIO |= R
-  type _DBIO[R] = DBIO <= R
-  type _dbioIO[R] = DBIO /= R
+  type _dbio[R] = SlickDBIO |= R
+  type _DBIO[R] = SlickDBIO <= R
+  type _dbioIO[R] = SlickDBIO /= R
 }
 
 trait DBIOCreation extends DBIOTypes {
-  def fromDBIO[R: _dbio, A](a: DBIO[A]): Eff[R, A] = Eff.send[DBIO, R, A](a)
+  def fromDBIO[R: _dbio, A](a: SlickDBIO[A]): Eff[R, A] = Eff.send[SlickDBIO, R, A](a)
 }
 
 trait DBIOInterpretation extends DBIOTypes {
@@ -23,14 +24,19 @@ trait DBIOInterpretation extends DBIOTypes {
 
 final class DBIOInterpretationOps[R, A](private val effect: Eff[R, A]) {
 
-  def runDBIO[U](implicit m: Member.Aux[DBIO, R, U],
+  def runDBIO[U](implicit m: Member.Aux[SlickDBIO, R, U],
                  future: FutureCreation._future[U],
-                 futureDatabaseExecutor: FutureDatabaseExecutor): Eff[U, A] = {
+                 futureDatabaseExecutor: FutureDatabaseExecutor,
+                 session: JdbcBackend#Session): Eff[U, A] = {
 
-    translate(effect)(new Translate[DBIO, U] {
-      override def apply[X](kv: DBIO[X]): Eff[U, X] = {
-        FutureCreation.fromFuture(futureDatabaseExecutor(kv).execute)
-      }
-    })
+//    futureDatabaseExecutor.withTransaction { implicit session =>
+      translate(effect)(new Translate[SlickDBIO, U] {
+        override def apply[X](kv: SlickDBIO[X]): Eff[U, X] = {
+          val res = futureDatabaseExecutor(kv).execute
+          FutureCreation.fromFuture(res)
+        }
+      })
+//    }
+
   }
 }

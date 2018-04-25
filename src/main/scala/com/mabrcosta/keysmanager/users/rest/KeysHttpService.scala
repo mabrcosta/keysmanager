@@ -18,7 +18,7 @@ import org.atnos.eff.concurrent.Scheduler
 import org.atnos.eff.syntax.all._
 import slick.dbio.DBIO
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
 class KeysHttpService @Inject()(private val keyService: KeysService[DBIO, TimedFuture],
@@ -43,7 +43,7 @@ class KeysHttpService @Inject()(private val keyService: KeysService[DBIO, TimedF
           key2
         }
 
-        val temp = runAsync(res.runDBIO.runReader(uidOwner).runEither)
+//        val temp = runAsync(res.runDBIO.runReader(uidOwner).runEither)
 //        val key1 = keyServiceDBIO.addKey[KeysDBIOStack](key.value)
 //        val key2 = keyServiceDBIO.addKey[KeysDBIOStack](key.value)
 //
@@ -73,11 +73,31 @@ class KeysHttpService @Inject()(private val keyService: KeysService[DBIO, TimedF
         complete(InternalServerError, ex.getMessage)
       }
     }
+//    val res = futureDatabaseExecutor.withFutureTransaction { implicit session =>
+//      runAsync(effect.runDBIO.runReader(uidOwner).runEither)
+//    }
+//    responseHandler[T](res, response)
   }
 
+  def responseHandler[T](result: Future[Either[Error,T]], response: T => Route): Route =
+    onComplete(result) {
+      case Success(Right(res))  => response(res)
+      case Success(Left(error)) => errorMapping(error)
+      case Failure(ex)          => {
+        logger.error(ex.getMessage, ex)
+        complete(InternalServerError, ex.getMessage)
+      }
+    }
+
   def handleResponseDBIO[T](effect: Eff[KeysDBIOStack, T], uidOwner: UUID, response: T => Route): Route = {
-//    val temp: Eff[KeysStack, T] = runDBIO[KeysDBIOStack, KeysStack, T](effect)
-    handleResponse[T](effect.runDBIO, uidOwner, response)
+//    futureDatabaseExecutor.withTransaction { implicit session =>
+//      handleResponse[T](effect.runDBIO, uidOwner, response)
+//    }
+
+    val res = futureDatabaseExecutor.withFutureTransaction { implicit session =>
+      runAsync(effect.runDBIO.runReader(uidOwner).runEither)
+    }
+    responseHandler[T](res, response)
   }
 
   def errorMapping(error: api.Error): Route = error match {

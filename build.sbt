@@ -28,7 +28,8 @@ libraryDependencies ++= {
     "org.scalatest"                 %%  "scalatest"                   % "3.0.5"     % Test,
     "org.mockito"                   %   "mockito-core"                % "2.16.0"    % Test,
     "com.typesafe.akka"             %%  "akka-http-testkit"           % akkaHttpV   % Test,
-    "com.rms.miu"                   %%  "slick-cats"                  % "0.7.1"
+    "com.rms.miu"                   %%  "slick-cats"                  % "0.7.1",
+    "com.github.takezoe" %% "blocking-slick-32" % "0.0.10"
   )
 }
 
