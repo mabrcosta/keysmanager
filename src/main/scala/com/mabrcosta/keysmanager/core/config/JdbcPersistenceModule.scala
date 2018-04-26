@@ -2,7 +2,7 @@ package com.mabrcosta.keysmanager.core.config
 
 import com.google.inject.Provides
 import com.mabrcosta.keysmanager.core.config.properties.Persistence
-import com.mabrcosta.keysmanager.core.persistence.util.DatabaseMigrator
+import com.mabrcosta.keysmanager.core.persistence.util.{DatabaseMigrator, JdbcProfileAsyncDatabase, WithSessionJdbcBackend}
 import com.typesafe.config.Config
 import javax.inject.Singleton
 import net.codingwell.scalaguice.ScalaModule
@@ -13,6 +13,8 @@ class JdbcPersistenceModule extends ScalaModule {
 
   override def configure(): Unit = {
     bind[DatabaseMigrator].in(classOf[Singleton])
+    bind[JdbcProfileAsyncDatabase].in(classOf[Singleton])
+    bind[WithSessionJdbcBackend].in(classOf[Singleton])
   }
 
   @Provides

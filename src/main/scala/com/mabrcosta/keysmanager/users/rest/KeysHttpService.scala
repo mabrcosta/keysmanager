@@ -5,35 +5,28 @@ import java.util.UUID
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import com.mabrcosta.keysmanager.core.persistence.util.DBIOEffect._
-import com.mabrcosta.keysmanager.core.persistence.util.JdbcProfileAsyncDatabase
-import com.mabrcosta.keysmanager.users.business.api
 import com.mabrcosta.keysmanager.users.business.api.{NotFound => _, _}
+import com.mabrcosta.keysmanager.users.business.{KeysStackInterpreter, api}
 import com.mabrcosta.keysmanager.users.data.{Key, KeyData}
 import com.typesafe.scalalogging.LazyLogging
 import javax.inject.Inject
 import org.atnos.eff._
-import org.atnos.eff.concurrent.Scheduler
-import org.atnos.eff.syntax.all._
 import slick.dbio.DBIO
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 import scala.util.{Failure, Success}
 
-class KeysHttpService @Inject()(private val keyService: KeysService[DBIO, TimedFuture],
-                                private val keyServiceDBIO: KeysService[DBIO, DBIO],
-                                implicit val executionContext: ExecutionContext,
-                                implicit val scheduler: Scheduler,
-                                private val database: JdbcProfileAsyncDatabase)
+class KeysHttpService @Inject()(private val keyService: KeysService[DBIO, DBIO],
+                                private val keysStackInterpreter: KeysStackInterpreter)
     extends KeysJsonSupport
     with LazyLogging {
 
   val routes: Route = pathPrefix("users" / JavaUUID / "keys") { uidOwner =>
     get {
-      handleResponseDBIO[Seq[Key]](keyServiceDBIO.getForOwner[KeysDBIOStack], uidOwner, keys => complete(keys))
+      handleResponseDBIO[Seq[Key]](keyService.getForOwner[KeysDBIOStack], uidOwner, keys => complete(keys))
     } ~ post {
       entity(as[KeyData]) { key =>
-        handleResponseDBIO[Key](keyServiceDBIO.addKey[KeysDBIOStack](key.value), uidOwner, key => complete(key))
+        handleResponseDBIO[Key](keyService.addKey[KeysDBIOStack](key.value), uidOwner, key => complete(key))
       }
     } ~ path(JavaUUID) { uidKey =>
       delete {
@@ -45,10 +38,7 @@ class KeysHttpService @Inject()(private val keyService: KeysService[DBIO, TimedF
   }
 
   def handleResponseDBIO[T](effect: Eff[KeysDBIOStack, T], uidOwner: UUID, response: T => Route): Route = {
-    val result = database.withTransaction { implicit sessionDatabase =>
-      FutureInterpretation.runAsync(effect.runDBIO.runReader(uidOwner).runEither)
-    }
-    responseHandler[T](result, response)
+    responseHandler[T](keysStackInterpreter.run(effect, uidOwner), response)
   }
 
   def responseHandler[T](result: Future[Either[Error, T]], response: T => Route): Route =

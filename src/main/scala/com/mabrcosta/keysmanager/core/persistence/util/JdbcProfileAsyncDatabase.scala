@@ -7,7 +7,7 @@ import slick.jdbc.JdbcBackend
 import scala.concurrent.{ExecutionContext, Future}
 
 class JdbcProfileAsyncDatabase @Inject()(db: JdbcBackend#Database,
-                                         backend: WithSessionBackend) extends JdbcProfileAsyncSession {
+                                         backend: WithSessionJdbcBackend) extends JdbcProfileAsyncSession {
   implicit val executionContext: ExecutionContext = db.executor.executionContext
 
   def withSimpleSession[T](f: (JdbcBackend#Session) => Future[T]): Future[T] = {
@@ -22,13 +22,13 @@ class JdbcProfileAsyncDatabase @Inject()(db: JdbcBackend#Database,
       s.withTransaction(f(s))
     }
 
-  def withSession[T](f: (WithSessionJdbcBackend#WithSessionDatabase) => Future[T]): Future[T] = {
+  def withSession[T](f: (WithProvidedSessionJdbcBackend#WithSessionDatabase) => Future[T]): Future[T] = {
     withSimpleSession { session =>
       f(backend.withSession(session))
     }
   }
 
-  def withTransaction[T](f: (WithSessionJdbcBackend#WithSessionDatabase) => Future[T]): Future[T] = {
+  def withTransaction[T](f: (WithProvidedSessionJdbcBackend#WithSessionDatabase) => Future[T]): Future[T] = {
     withSession { db =>
       db.session.withTransaction(f(db))
     }

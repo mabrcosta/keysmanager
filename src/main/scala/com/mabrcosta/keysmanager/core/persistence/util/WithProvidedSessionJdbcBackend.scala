@@ -6,7 +6,7 @@ import javax.inject.Inject
 import org.reactivestreams.Subscriber
 import slick.jdbc.{JdbcBackend, JdbcProfile}
 
-trait WithSessionJdbcBackend extends JdbcBackend {
+trait WithProvidedSessionJdbcBackend extends JdbcBackend {
 
   type WithSessionDatabase = WithSessionDatabaseDef
 
@@ -40,9 +40,9 @@ trait WithSessionJdbcBackend extends JdbcBackend {
   }
 }
 
-class WithSessionBackend @Inject()(db: JdbcProfile#Backend#Database) extends WithSessionJdbcBackend {
+class WithSessionJdbcBackend @Inject()(db: JdbcProfile#Backend#Database) extends WithProvidedSessionJdbcBackend {
 
-  implicit def withSession(session: JdbcBackend#Session): WithSessionJdbcBackend#WithSessionDatabase = {
+  implicit def withSession(session: JdbcBackend#Session): WithProvidedSessionJdbcBackend#WithSessionDatabase = {
     new WithSessionDatabaseDef(db, session)
   }
 

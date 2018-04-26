@@ -25,7 +25,7 @@ final class DBIOInterpretationOps[R, A](private val effect: Eff[R, A]) {
 
   def runDBIO[U](implicit m: Member.Aux[SlickDBIO, R, U],
                  future: FutureCreation._future[U],
-                 sessionDatabase: WithSessionJdbcBackend#WithSessionDatabase): Eff[U, A] = {
+                 sessionDatabase: WithProvidedSessionJdbcBackend#WithSessionDatabase): Eff[U, A] = {
 
     translate(effect)(new Translate[SlickDBIO, U] {
       override def apply[X](action: SlickDBIO[X]): Eff[U, X] = {

@@ -7,7 +7,7 @@ import com.mabrcosta.keysmanager.core.config.properties.ServerProperties
 import com.mabrcosta.keysmanager.core.data.{ServerAPIConfiguration, ServerConfiguration}
 import com.mabrcosta.keysmanager.core.persistence.PersistenceSchema
 import com.mabrcosta.keysmanager.core.persistence.util.{DatabaseMigratorInfo, EffDbExecutorDBIOFuture, EffDbExecutorId, EffectsDatabaseExecutor}
-import com.mabrcosta.keysmanager.users.business.KeysServiceImpl
+import com.mabrcosta.keysmanager.users.business.{KeysServiceImpl, KeysStackInterpreter}
 import com.mabrcosta.keysmanager.users.business.api.KeysService
 import com.mabrcosta.keysmanager.users.persistence.KeysRepository
 import com.mabrcosta.keysmanager.users.persistence.api.KeysDal
@@ -26,13 +26,15 @@ class KeysManagerModule extends ScalaModule {
   val migrationsResourcesPackage = "com.mabrcosta.keysmanager.migration"
 
   private lazy val migrationsBinder = ScalaMultibinder.newSetBinder[DatabaseMigratorInfo](binderAccess)
-  protected[this] def addMigrationInfo: DatabaseMigratorInfo => Unit = migrationsBinder.addBinding.toInstance(_)
+  private[this] def addMigrationInfo: DatabaseMigratorInfo => Unit = migrationsBinder.addBinding.toInstance(_)
 
   override def configure(): Unit = {
     bind(new TypeLiteral[KeysDal[DBIO]]() {}).to(classOf[KeysRepository]).in(classOf[Singleton])
     bind(new TypeLiteral[EffectsDatabaseExecutor[DBIO, TimedFuture]]() {})
       .to(classOf[EffDbExecutorDBIOFuture])
       .in(classOf[Singleton])
+
+    bind[KeysStackInterpreter].in(classOf[Singleton])
 
     addMigrationInfo(DatabaseMigratorInfo(PersistenceSchema.schema, Seq(migrationsResourcesPackage)))
   }
