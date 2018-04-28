@@ -19,6 +19,9 @@ class KeysStackInterpreter @Inject()(implicit val executionContext: ExecutionCon
   def run[T](effect: Eff[KeysDBIOStack, T], uidOwner: UUID): Future[Either[Error, T]] =
     database.withTransaction { implicit sessionDatabase =>
       FutureInterpretation.runAsync(effect.runDBIO.runReader(uidOwner).runEither)
-    }
+    }({
+      case Left(_)  => false
+      case Right(_) => true
+    })
 
 }

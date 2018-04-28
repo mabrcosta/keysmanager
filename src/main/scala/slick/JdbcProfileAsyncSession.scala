@@ -10,23 +10,27 @@ trait JdbcProfileAsyncSession {
     * Extends Session to add methods for session management.
     */
   implicit class AsyncSession(session: JdbcBackend#Session) {
-    def withTransaction[T](f: => Future[T])(implicit ec: ExecutionContext): Future[T] = {
+    def withTransaction[T](f: => Future[T])(isSuccess: T => Boolean)(implicit ec: ExecutionContext): Future[T] = {
       val s = session.asInstanceOf[JdbcBackend#BaseSession]
 
       if (s.isInTransaction) f
       else {
         s.startInTransaction
         f.map(v => {
-            s.endInTransaction(s.conn.commit())
+            if (isSuccess(v)) commit(s) else rollback(s)
             v
           })
           .recoverWith({
             case ex: Throwable => {
-              s.endInTransaction(s.conn.rollback())
+              rollback(s)
               Future.failed(ex)
             }
           })
       }
     }
+
+    private def commit(session: JdbcBackend#BaseSession): Unit = session.endInTransaction(session.conn.commit())
+
+    private def rollback(session: JdbcBackend#BaseSession): Unit = session.endInTransaction(session.conn.rollback())
   }
 }
