@@ -2,40 +2,26 @@ package com.mabrcosta.keysmanager.users.key.business
 
 import java.util.UUID
 
-import com.mabrcosta.keysmanager.core.persistence.util.{EffectsDatabaseActionExecutor, EffectsDatabaseExecutor}
-import com.mabrcosta.keysmanager.users.business.api
+import com.mabrcosta.keysmanager.core.persistence.util._
 import com.mabrcosta.keysmanager.users.business.api.KeysStack
+import com.mabrcosta.keysmanager.users.business.{KeysStackInterpreter, api}
 import org.atnos.eff.concurrent.Scheduler
-import org.atnos.eff.future.{_future, fromFuture, runAsync}
-import org.atnos.eff.syntax.all._
-import org.atnos.eff.{Eff, ExecutorServices, TimedFuture}
+import org.atnos.eff.{Eff, ExecutorServices}
 import org.mockito.Mockito
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{Assertion, AsyncWordSpec}
 import slick.dbio.{DBIO, DBIOAction}
+import slick.jdbc.JdbcBackend
 
 import scala.concurrent.Future
 
 trait AbstractServiceSpec extends AsyncWordSpec with MockitoSugar {
-
-  implicit val scheduler: Scheduler = ExecutorServices.schedulerFromGlobalExecutionContext
-
-  val effectsDatabaseExecutor: EffectsDatabaseExecutor[DBIO, TimedFuture] =
-    mock[EffectsDatabaseExecutor[DBIO, TimedFuture]]
 
   def mockDbInteraction[T](methodCall: DBIO[T], returnValue: T): Unit = {
     val execDbAction = Future.successful(returnValue)
     val dbAction = DBIOAction.from(execDbAction)
 
     Mockito.when(methodCall).thenReturn(dbAction)
-    mockDatabaseExecutor[KeysStack, T](dbAction, execDbAction)
-  }
-
-  def mockDatabaseExecutor[R: _future, T](action: DBIO[T], returnValue: Future[T]): Unit = {
-    val actionExecutor = mock[EffectsDatabaseActionExecutor[DBIO, TimedFuture, T]]
-
-    Mockito.when(actionExecutor.execute).thenReturn(fromFuture(returnValue))
-    Mockito.when(effectsDatabaseExecutor.apply(action)).thenReturn(actionExecutor)
   }
 
   def assertRight[T](effect: Eff[KeysStack, T], uidOwner: UUID, valueAssertion: T => Assertion): Future[Assertion] = {
@@ -68,7 +54,14 @@ trait AbstractServiceSpec extends AsyncWordSpec with MockitoSugar {
   }
 
   def runStack[T](effect: Eff[KeysStack, T], uidOwner: UUID): Future[Either[api.Error, T]] = {
-    runAsync(effect.runReader(uidOwner).runEither)
+    val db = JdbcBackend.Database.forURL("jdbc:h2:mem:test")
+    val backend = new WithSessionJdbcBackend(db)
+    val asyncDatabase = new JdbcProfileAsyncDatabase(db, backend)
+    val scheduler: Scheduler = ExecutorServices.schedulerFromGlobalExecutionContext
+
+    val interpreter = new KeysStackInterpreter(asyncDatabase, executionContext, scheduler)
+
+    interpreter.run(effect, uidOwner)
   }
 
 }

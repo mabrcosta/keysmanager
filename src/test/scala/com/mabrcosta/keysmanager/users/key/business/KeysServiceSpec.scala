@@ -2,24 +2,23 @@ package com.mabrcosta.keysmanager.users.key.business
 
 import java.util.UUID
 
-import com.mabrcosta.keysmanager.core.persistence.util.{EffectsDatabaseActionExecutor, EffectsDatabaseExecutor}
+import com.mabrcosta.keysmanager.core.persistence.util.EffDbExecutorId
 import com.mabrcosta.keysmanager.users.business.KeysServiceImpl
 import com.mabrcosta.keysmanager.users.business.api._
 import com.mabrcosta.keysmanager.users.data.Key
 import com.mabrcosta.keysmanager.users.persistence.api.KeysDal
 import org.atnos.eff.MemberIn._
-import org.atnos.eff.{Eff, TimedFuture}
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.{ArgumentMatcher, ArgumentMatchers, Mockito}
 import slick.dbio.{DBIO, DBIOAction}
-import com.mabrcosta.keysmanager.core.persistence.util.DBIOEffect._
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class KeysServiceSpec extends AbstractServiceSpec {
 
   val keysDal: KeysDal[DBIO] = mock[KeysDal[DBIO]]
-  val keyService = new KeysServiceImpl[DBIO, TimedFuture](keysDal, effectsDatabaseExecutor, executionContext)
+  val effectsExecutor = new EffDbExecutorId[DBIO]
+  val keyService = new KeysServiceImpl[DBIO, DBIO](keysDal, effectsExecutor, executionContext)
 
   val uidOwner: UUID = UUID.randomUUID()
 
@@ -57,7 +56,6 @@ class KeysServiceSpec extends AbstractServiceSpec {
             val key = invocation.getArgument[Key](0)
             if (key.value == keyValue) dbAction else fail()
           })
-        mockDatabaseExecutor[KeysStack, Key](dbAction, execDbAction)
 
         assertRight[Key](
           keyService.addKey[KeysStack](keyValue),
@@ -70,9 +68,6 @@ class KeysServiceSpec extends AbstractServiceSpec {
   "Deleting keys" when {
     "deleting a non-existent key for owner and uid" should {
       "return a NotFound error" in {
-        val keysDal: KeysDal[DBIO] = mock[KeysDal[DBIO]]
-        val keyService = new KeysServiceImpl[DBIO, TimedFuture](keysDal, effectsDatabaseExecutor, executionContext)
-
         val uidKey = UUID.randomUUID()
         val response: Option[Key] = None
         mockDbInteraction(keysDal.findForOwner(uidKey, uidOwner), response)
@@ -81,7 +76,6 @@ class KeysServiceSpec extends AbstractServiceSpec {
           case res         => fail(res.toString)
         })
         Mockito.verify(keysDal).findForOwner(uidKey, uidOwner)
-        Mockito.verifyNoMoreInteractions(keysDal)
 
         res
       }
@@ -90,7 +84,7 @@ class KeysServiceSpec extends AbstractServiceSpec {
       "return true" in {
         val uidKey = UUID.randomUUID()
         val response = Key(id = Some(uidKey), value = "key_value", uidOwnerSubject = uidOwner)
-        mockDbInteractionDBIO[KeysDBIOStack, Option[Key]](keysDal.findForOwner(uidKey, uidOwner), Some(response))
+        mockDbInteraction(keysDal.findForOwner(uidKey, uidOwner), Some(response))
         mockDbInteraction(keysDal.delete(response), response)
         assertRight[Boolean](keyService.deleteKey[KeysStack](uidKey), uidOwner, result => if (result) succeed else fail)
       }
@@ -99,27 +93,5 @@ class KeysServiceSpec extends AbstractServiceSpec {
 
   def keyValueArgumentMatcher(keyValue: String): ArgumentMatcher[Key] =
     (argument: Key) => if (keyValue == argument.value) true else false
-
-  val effectsDBIODatabaseExecutor: EffectsDatabaseExecutor[DBIO, DBIO] =
-    mock[EffectsDatabaseExecutor[DBIO, DBIO]]
-
-//  type _dbio[R] = DBIOAction[?, NoStream, Effect.All] |= R
-//  type KeysDBIOStack = Fx.fx3[OwnerReader[?], ErrorEither[?], DBIOAction[?, NoStream, Effect.All]]
-
-//  implicit def memberin[R]: MemberIn[DBIO, R] = MemberIn
-
-  def mockDbInteractionDBIO[R: _dbio, T](methodCall: DBIO[T], returnValue: T): Unit = {
-    val dbAction = DBIOAction.successful(returnValue)
-
-    Mockito.when(methodCall).thenReturn(dbAction)
-    mockDatabaseExecutorDBIO[R, T](dbAction, returnValue)
-  }
-
-  def mockDatabaseExecutorDBIO[R: _dbio, T](action: DBIO[T], returnValue: T): Unit = {
-    val actionExecutor = mock[EffectsDatabaseActionExecutor[DBIO, DBIO, T]]
-
-    Mockito.when(effectsDBIODatabaseExecutor.apply(action)).thenReturn(actionExecutor)
-    Mockito.when(actionExecutor.execute[R]).thenReturn(Eff.send[DBIO, R, T](action))
-  }
 
 }

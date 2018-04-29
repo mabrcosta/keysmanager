@@ -2,11 +2,11 @@ package com.mabrcosta.keysmanager.core.persistence.util
 
 import javax.inject.Inject
 import slick.JdbcProfileAsyncSession
-import slick.jdbc.JdbcBackend
+import slick.jdbc.{JdbcBackend, JdbcProfile}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class JdbcProfileAsyncDatabase @Inject()(db: JdbcBackend#Database, backend: WithSessionJdbcBackend)
+class JdbcProfileAsyncDatabase @Inject()(db: JdbcProfile#Backend#Database, backend: WithSessionJdbcBackend)
     extends JdbcProfileAsyncSession {
   implicit val executionContext: ExecutionContext = db.executor.executionContext
 

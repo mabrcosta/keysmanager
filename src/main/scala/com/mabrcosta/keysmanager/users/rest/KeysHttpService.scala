@@ -23,21 +23,21 @@ class KeysHttpService @Inject()(private val keyService: KeysService[DBIO, DBIO],
 
   val routes: Route = pathPrefix("users" / JavaUUID / "keys") { uidOwner =>
     get {
-      handleResponseDBIO[Seq[Key]](keyService.getForOwner[KeysDBIOStack], uidOwner, keys => complete(keys))
+      handleResponseDBIO[Seq[Key]](keyService.getForOwner[KeysStack], uidOwner, keys => complete(keys))
     } ~ post {
       entity(as[KeyData]) { key =>
-        handleResponseDBIO[Key](keyService.addKey[KeysDBIOStack](key.value), uidOwner, key => complete(key))
+        handleResponseDBIO[Key](keyService.addKey[KeysStack](key.value), uidOwner, key => complete(key))
       }
     } ~ path(JavaUUID) { uidKey =>
       delete {
-        handleResponseDBIO[Boolean](keyService.deleteKey[KeysDBIOStack](uidKey),
+        handleResponseDBIO[Boolean](keyService.deleteKey[KeysStack](uidKey),
                                     uidOwner,
                                     res => if (res) complete("") else complete(InternalServerError))
       }
     }
   }
 
-  def handleResponseDBIO[T](effect: Eff[KeysDBIOStack, T], uidOwner: UUID, response: T => Route): Route = {
+  def handleResponseDBIO[T](effect: Eff[KeysStack, T], uidOwner: UUID, response: T => Route): Route = {
     responseHandler[T](keysStackInterpreter.run(effect, uidOwner), response)
   }
 

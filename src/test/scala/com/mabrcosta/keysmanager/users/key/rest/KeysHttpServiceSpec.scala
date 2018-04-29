@@ -4,26 +4,25 @@ import java.util.UUID
 
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import com.mabrcosta.keysmanager.users.business.api
-import com.mabrcosta.keysmanager.users.business.api.{KeysService, KeysStack, NotFound}
+import com.mabrcosta.keysmanager.users.business.api.{KeysStack, KeysService, NotFound}
+import com.mabrcosta.keysmanager.users.business.{KeysStackInterpreter, api}
 import com.mabrcosta.keysmanager.users.data.{Key, KeyData}
 import com.mabrcosta.keysmanager.users.rest.KeysHttpService
-import org.atnos.eff.{Eff, EitherCreation, ExecutorServices, TimedFuture}
+import org.atnos.eff.{Eff, EitherCreation}
 import org.mockito.{ArgumentMatchers, Mockito}
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{AsyncWordSpec, Matchers}
 import slick.dbio.DBIO
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class KeysHttpServiceSpec extends AsyncWordSpec with ScalatestRouteTest with Matchers with MockitoSugar {
 
   import com.mabrcosta.keysmanager.users.rest.KeysJsonSupport._
 
-  val keyService: KeysService[DBIO, TimedFuture] = mock[KeysService[DBIO, TimedFuture]]
-
-  val keysHttpService =
-    new KeysHttpService(keyService, ExecutionContext.global, ExecutorServices.schedulerFromGlobalExecutionContext)
+  val keyService: KeysService[DBIO, DBIO] = mock[KeysService[DBIO, DBIO]]
+  val interpreter: KeysStackInterpreter = mock[KeysStackInterpreter]
+  val keysHttpService = new KeysHttpService(keyService, interpreter)
 
   val uidOwnerStr = "0d3fcc37-d330-4c7c-8d82-128235617d7d"
   val uidOwner: UUID = UUID.fromString(uidOwnerStr)
@@ -34,7 +33,11 @@ class KeysHttpServiceSpec extends AsyncWordSpec with ScalatestRouteTest with Mat
 
     "the owner have no keys" should {
       "return an empty sequence" in {
-        Mockito.when(keyService.getForOwner[KeysStack]).thenReturn(Eff.pure[KeysStack, Seq[Key]](Seq()))
+        val values = Seq()
+        val effect = Eff.pure[KeysStack, Seq[Key]](values)
+
+        Mockito.when(keyService.getForOwner[KeysStack]).thenReturn(effect)
+        mockEffectInterpreter(effect, values)
 
         Get(basePath) ~> keysHttpService.routes ~> check {
           status shouldEqual StatusCodes.OK
@@ -46,7 +49,10 @@ class KeysHttpServiceSpec extends AsyncWordSpec with ScalatestRouteTest with Mat
       "return a sequence with 2 elements" in {
         val values =
           Seq(Key(value = "key1", uidOwnerSubject = uidOwner), Key(value = "key2", uidOwnerSubject = uidOwner))
-        Mockito.when(keyService.getForOwner[KeysStack]).thenReturn(Eff.pure[KeysStack, Seq[Key]](values))
+        val effect = Eff.pure[KeysStack, Seq[Key]](values)
+
+        Mockito.when(keyService.getForOwner[KeysStack]).thenReturn(effect)
+        mockEffectInterpreter(effect, values)
 
         Get(basePath) ~> keysHttpService.routes ~> check {
           status shouldEqual StatusCodes.OK
@@ -61,13 +67,14 @@ class KeysHttpServiceSpec extends AsyncWordSpec with ScalatestRouteTest with Mat
       "return a persisted key with that value" in {
         val keyValue = "key_value"
         val key = Key(value = keyValue, uidOwnerSubject = uidOwner)
+        val effect = Eff.pure[KeysStack, Key](key)
 
         Mockito
-          .when(
-            keyService.addKey[KeysStack](ArgumentMatchers.eq(keyValue))(ArgumentMatchers.any(),
-                                                                        ArgumentMatchers.any(),
-                                                                        ArgumentMatchers.any()))
+          .when(keyService.addKey[KeysStack](ArgumentMatchers.eq(keyValue))(ArgumentMatchers.any(),
+                                                                                ArgumentMatchers.any()))
           .thenReturn(Eff.pure[KeysStack, Key](key))
+
+        mockEffectInterpreter(effect, key)
 
         Post(basePath, KeyData(keyValue)) ~> keysHttpService.routes ~> check {
           status shouldEqual StatusCodes.OK
@@ -82,13 +89,16 @@ class KeysHttpServiceSpec extends AsyncWordSpec with ScalatestRouteTest with Mat
       "return a NotFound error" in {
         val uidKey = UUID.randomUUID()
         val error = NotFound(s"Unable to find key with uid $uidKey")
+        val effect = EitherCreation.left[KeysStack, api.Error, Boolean](error)
 
         Mockito
           .when(
             keyService.deleteKey[KeysStack](ArgumentMatchers.eq(uidKey))(ArgumentMatchers.any(),
-              ArgumentMatchers.any(),
-              ArgumentMatchers.any()))
-          .thenReturn(EitherCreation.left[KeysStack, api.Error, Boolean](error))
+                                                                             ArgumentMatchers.any(),
+                                                                             ArgumentMatchers.any()))
+          .thenReturn(effect)
+
+        mockEffectInterpreter(effect, error)
 
         Delete(basePath + s"/$uidKey") ~> keysHttpService.routes ~> check {
           status shouldEqual StatusCodes.NotFound
@@ -99,19 +109,37 @@ class KeysHttpServiceSpec extends AsyncWordSpec with ScalatestRouteTest with Mat
     "deleting a valid key for owner and uid" should {
       "return true" in {
         val uidKey = UUID.randomUUID()
+        val result = true
+        val effect = Eff.pure[KeysStack, Boolean](result)
 
         Mockito
           .when(
             keyService.deleteKey[KeysStack](ArgumentMatchers.eq(uidKey))(ArgumentMatchers.any(),
-              ArgumentMatchers.any(),
-              ArgumentMatchers.any()))
-          .thenReturn(Eff.pure[KeysStack, Boolean](true))
+                                                                             ArgumentMatchers.any(),
+                                                                             ArgumentMatchers.any()))
+          .thenReturn(effect)
+
+        mockEffectInterpreter(effect, result)
 
         Delete(basePath + s"/$uidKey") ~> keysHttpService.routes ~> check {
           status shouldEqual StatusCodes.OK
         }
       }
     }
+  }
+
+  private def mockEffectInterpreter[T](effect: Eff[KeysStack, T], result: T): Unit = {
+    mockEffectInterpreter(effect, Right(result))
+  }
+
+  private def mockEffectInterpreter[T](effect: Eff[KeysStack, T], error: api.Error): Unit = {
+    mockEffectInterpreter(effect, Left(error))
+  }
+
+  private def mockEffectInterpreter[T](effect: Eff[KeysStack, T], result: Either[api.Error, T]): Unit = {
+    Mockito
+      .when(interpreter.run(ArgumentMatchers.eq(effect), ArgumentMatchers.eq(uidOwner)))
+      .thenReturn(Future.successful(result))
   }
 
 }
