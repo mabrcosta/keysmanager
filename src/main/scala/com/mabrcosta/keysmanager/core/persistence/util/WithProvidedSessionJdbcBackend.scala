@@ -4,14 +4,18 @@ import java.sql.Connection
 
 import javax.inject.Inject
 import org.reactivestreams.Subscriber
+import slick.JdbcProfileAsyncSession
 import slick.jdbc.{JdbcBackend, JdbcProfile}
+
+import scala.concurrent.{ExecutionContext, Future}
 
 trait WithProvidedSessionJdbcBackend extends JdbcBackend {
 
   type WithSessionDatabase = WithSessionDatabaseDef
 
   class WithSessionDatabaseDef(private val db: JdbcProfile#Backend#Database, val session: JdbcBackend#Session)
-      extends DatabaseDef(db.source, db.executor) {
+      extends DatabaseDef(db.source, db.executor)
+      with JdbcProfileAsyncSession {
 
     private val dbSession = session.asInstanceOf[Session]
 
@@ -36,6 +40,10 @@ trait WithProvidedSessionJdbcBackend extends JdbcBackend {
       }
       ctx.pin
       ctx
+    }
+
+    def withTransaction[T](f: => Future[T])(isSuccess: T => Boolean)(implicit ec: ExecutionContext): Future[T] = {
+      session.withTransaction(f)(isSuccess)
     }
   }
 }

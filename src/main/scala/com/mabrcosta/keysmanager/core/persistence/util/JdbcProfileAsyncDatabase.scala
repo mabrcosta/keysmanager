@@ -8,28 +8,29 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class JdbcProfileAsyncDatabase @Inject()(db: JdbcProfile#Backend#Database, backend: WithSessionJdbcBackend)
     extends JdbcProfileAsyncSession {
-  implicit val executionContext: ExecutionContext = db.executor.executionContext
 
-  def withSimpleSession[T](f: (JdbcBackend#Session) => Future[T]): Future[T] = {
+  def withSimpleSession[T](f: (JdbcBackend#Session) => Future[T])(implicit ec: ExecutionContext): Future[T] = {
     val session = db.createSession()
     val res = f(session)
     res.onComplete(_ => session.close())
     res
   }
 
-  def withSimpleTransaction[T](f: (JdbcBackend#Session) => Future[T])(isSuccess: T => Boolean): Future[T] =
+  def withSimpleTransaction[T](f: (JdbcBackend#Session) => Future[T])(isSuccess: T => Boolean)(
+      implicit ec: ExecutionContext): Future[T] =
     withSimpleSession { s =>
       s.withTransaction(f(s))(isSuccess)
     }
 
-  def withSession[T](f: (WithProvidedSessionJdbcBackend#WithSessionDatabase) => Future[T]): Future[T] = {
+  def withSession[T](f: (WithProvidedSessionJdbcBackend#WithSessionDatabase) => Future[T])(
+      implicit ec: ExecutionContext): Future[T] = {
     withSimpleSession { session =>
       f(backend.withSession(session))
     }
   }
 
-  def withTransaction[T](f: (WithProvidedSessionJdbcBackend#WithSessionDatabase) => Future[T])(
-                         isSuccess: T => Boolean): Future[T] = {
+  def withTransaction[T](f: (WithProvidedSessionJdbcBackend#WithSessionDatabase) => Future[T])(isSuccess: T => Boolean)(
+      implicit ec: ExecutionContext): Future[T] = {
     withSession { db =>
       db.session.withTransaction(f(db))(isSuccess)
     }

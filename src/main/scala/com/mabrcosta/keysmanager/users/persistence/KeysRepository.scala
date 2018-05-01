@@ -7,6 +7,7 @@ import com.mabrcosta.keysmanager.users.data.Key
 import com.mabrcosta.keysmanager.users.persistence.api.KeysDal
 import javax.inject.Inject
 import slick.ast.BaseTypedType
+import slick.ast.ColumnOption.Unique
 import slick.dbio.{DBIO => SlickDBIO}
 import slick.jdbc.JdbcProfile
 
@@ -21,7 +22,7 @@ class KeysRepository @Inject()(private val jdbcProfile: JdbcProfile)
   val pkType = implicitly[BaseTypedType[UUID]]
 
   class Keys(tag: Tag) extends BaseRepositoryTable(tag, Some(PersistenceSchema.schema), "keys") {
-    def value = column[String]("value")
+    def value = column[String]("value", Unique)
     def uidOwnerSubject = column[UUID]("uid_owner_subject")
 
     def * =

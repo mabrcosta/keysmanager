@@ -1,1 +1,1 @@
---CREATE SCHEMA "security";
+--CREATE SCHEMA "PUBLIC";

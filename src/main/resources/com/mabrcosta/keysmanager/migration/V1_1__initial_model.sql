@@ -1,4 +1,4 @@
-create table "public"."keys" (
+create table "PUBLIC"."keys" (
     "uid" UUID NOT NULL PRIMARY KEY,
     "value" VARCHAR NOT NULL,
     "uid_owner_subject" UUID NOT NULL,
