@@ -19,10 +19,10 @@ abstract class BaseDBIORepository[TEntity <: Entity[TEntity, TKey], TKey](
 
     implicit val instantMapper: JdbcType[Instant] with BaseTypedType[Instant] = DateMapper.instant2SqlTimestampMapper
 
-    def uidCreatorSubject = column[Option[UUID]]("uid_creator_subject")
-    def uidLastModifierSubject = column[Option[UUID]]("uid_last_modifier_subject")
-    def creationTimestamp = column[Instant]("creation_timestamp")
-    def updateTimestamp = column[Instant]("update_timestamp")
+    def uidCreatorUser = column[Option[UUID]]("uid_creator_user")
+    def uidLastModifierUser = column[Option[UUID]]("uid_last_modifier_user")
+    def creationInstant = column[Instant]("creation_instant")
+    def updateInstant = column[Instant]("update_instant")
   }
 
 }

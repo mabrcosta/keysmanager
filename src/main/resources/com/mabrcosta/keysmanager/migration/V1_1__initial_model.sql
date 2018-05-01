@@ -1,8 +1,8 @@
 create table "PUBLIC"."keys" (
     "uid" UUID NOT NULL PRIMARY KEY,
     "value" VARCHAR NOT NULL,
-    "uid_owner_subject" UUID NOT NULL,
-    "uid_creator_subject" UUID,
-    "uid_last_modifier_subject" UUID,
-    "creation_timestamp" TIMESTAMP NOT NULL,
-    "update_timestamp" TIMESTAMP NOT NULL);
+    "uid_owner_user" UUID NOT NULL,
+    "uid_creator_user" UUID,
+    "uid_last_modifier_user" UUID,
+    "creation_instant" TIMESTAMP NOT NULL,
+    "update_instant" TIMESTAMP NOT NULL);

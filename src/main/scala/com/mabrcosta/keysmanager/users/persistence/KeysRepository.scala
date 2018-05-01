@@ -23,11 +23,11 @@ class KeysRepository @Inject()(private val jdbcProfile: JdbcProfile)
 
   class Keys(tag: Tag) extends BaseRepositoryTable(tag, Some(PersistenceSchema.schema), "keys") {
     def value = column[String]("value", Unique)
-    def uidOwnerSubject = column[UUID]("uid_owner_subject")
+    def uidOwnerSubject = column[UUID]("uid_owner_user")
 
     def * =
-      (id.?, value, uidOwnerSubject, uidCreatorSubject, uidLastModifierSubject, creationTimestamp,
-        updateTimestamp) <> (Key.tupled, Key.unapply)
+      (id.?, value, uidOwnerSubject, uidCreatorUser, uidLastModifierUser, creationInstant,
+        updateInstant) <> (Key.tupled, Key.unapply)
   }
 
   private lazy val findForOwnerCompiled = Compiled(

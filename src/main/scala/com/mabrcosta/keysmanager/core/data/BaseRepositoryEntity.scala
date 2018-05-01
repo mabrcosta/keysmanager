@@ -7,9 +7,9 @@ import com.byteslounge.slickrepo.meta.Entity
 
 
 trait BaseRepositoryEntity[TEntity <: Entity[TEntity, TUID], TUID] extends Entity[TEntity, TUID] {
-  val uidCreatorSubject: Option[UUID]
-  val uidLastModifierSubject: Option[UUID]
-  val creationTimestamp: Instant
-  val updateTimestamp: Instant
+  val uidCreatorUser: Option[UUID]
+  val uidLastModifierUser: Option[UUID]
+  val creationInstant: Instant
+  val updateInstant: Instant
 }
 
