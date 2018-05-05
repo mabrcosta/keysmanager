@@ -4,6 +4,7 @@ import java.util.UUID
 
 import com.mabrcosta.keysmanager.core.persistence.{BaseDBIORepository, DatabaseDal, PersistenceSchema}
 import com.mabrcosta.keysmanager.machines.data.Machine
+import com.mabrcosta.keysmanager.machines.persistence.api.MachinesDal
 import javax.inject.Inject
 import slick.ast.BaseTypedType
 import slick.dbio.{DBIO => SlickDBIO}
@@ -11,7 +12,7 @@ import slick.jdbc.JdbcProfile
 
 class MachinesRepository @Inject()(private val jdbcProfile: JdbcProfile)
     extends BaseDBIORepository[Machine, UUID](jdbcProfile)
-    with DatabaseDal[Machine, UUID, SlickDBIO] {
+    with MachinesDal[SlickDBIO] {
 
   import profile.api._
 
@@ -25,8 +26,20 @@ class MachinesRepository @Inject()(private val jdbcProfile: JdbcProfile)
     def uidMachineAccessProvider = column[UUID]("uid_machine_access_provider")
 
     def * =
-      (id.?, name, hostname, uidMachineAccessProvider, uidCreatorUser, uidLastModifierUser, creationInstant,
-        updateInstant) <> (Machine.tupled, Machine.unapply)
+      (id.?,
+       name,
+       hostname,
+       uidMachineAccessProvider,
+       uidCreatorUser,
+       uidLastModifierUser,
+       creationInstant,
+       updateInstant) <> (Machine.tupled, Machine.unapply)
   }
+
+  private lazy val findForHostnameCompiled = Compiled(
+    (hostname: Rep[String]) => tableQuery.filter(_.hostname === hostname))
+
+  def findForHostname(hostname: String): DBIO[Option[Machine]] =
+    findForHostnameCompiled(hostname).result.headOption
 
 }

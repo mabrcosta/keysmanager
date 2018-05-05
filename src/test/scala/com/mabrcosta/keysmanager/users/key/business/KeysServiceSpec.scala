@@ -58,7 +58,7 @@ class KeysServiceSpec extends AbstractServiceSpec {
           })
 
         assertRight[Key](
-          keyService.addKey[KeysStack](keyValue),
+          keyService.add[KeysStack](keyValue),
           uidOwner,
           result => if (keyValueArgumentMatcher(keyValue).matches(result)) succeed else fail(result.toString))
       }
@@ -71,7 +71,7 @@ class KeysServiceSpec extends AbstractServiceSpec {
         val uidKey = UUID.randomUUID()
         val response: Option[Key] = None
         mockDbInteraction(keysDal.findForOwner(uidKey, uidOwner), response)
-        val res = assertLeft[Boolean](keyService.deleteKey[KeysStack](uidKey), uidOwner, {
+        val res = assertLeft[Boolean](keyService.delete[KeysStack](uidKey), uidOwner, {
           case NotFound(_) => succeed
           case res         => fail(res.toString)
         })
@@ -86,7 +86,7 @@ class KeysServiceSpec extends AbstractServiceSpec {
         val response = Key(id = Some(uidKey), value = "key_value", uidOwnerSubject = uidOwner)
         mockDbInteraction(keysDal.findForOwner(uidKey, uidOwner), Some(response))
         mockDbInteraction(keysDal.delete(response), response)
-        assertRight[Boolean](keyService.deleteKey[KeysStack](uidKey), uidOwner, result => if (result) succeed else fail)
+        assertRight[Boolean](keyService.delete[KeysStack](uidKey), uidOwner, result => if (result) succeed else fail)
       }
     }
   }

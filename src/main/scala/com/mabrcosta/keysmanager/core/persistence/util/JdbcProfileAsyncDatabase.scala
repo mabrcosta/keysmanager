@@ -2,6 +2,7 @@ package com.mabrcosta.keysmanager.core.persistence.util
 
 import javax.inject.Inject
 import slick.JdbcProfileAsyncSession
+import slick.dbio.DBIO
 import slick.jdbc.{JdbcBackend, JdbcProfile}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -35,4 +36,9 @@ class JdbcProfileAsyncDatabase @Inject()(db: JdbcProfile#Backend#Database, backe
       db.session.withTransaction(f(db))(isSuccess)
     }
   }
+
+  implicit class DBIORunner[T](action: DBIO[T]) {
+    def run(implicit database: WithProvidedSessionJdbcBackend#WithSessionDatabase): Future[T] = database.run(action)
+  }
+
 }

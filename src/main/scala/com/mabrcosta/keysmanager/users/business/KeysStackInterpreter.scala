@@ -2,8 +2,9 @@ package com.mabrcosta.keysmanager.users.business
 
 import java.util.UUID
 
+import com.mabrcosta.keysmanager.core.business.api.Error
 import com.mabrcosta.keysmanager.core.persistence.util.JdbcProfileAsyncDatabase
-import com.mabrcosta.keysmanager.users.business.api.{Error, KeysStack}
+import com.mabrcosta.keysmanager.users.business.api.KeysStack
 import org.atnos.eff.{Eff, FutureInterpretation}
 import org.atnos.eff.concurrent.Scheduler
 import com.mabrcosta.keysmanager.core.persistence.util.DBIOEffect._

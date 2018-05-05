@@ -4,7 +4,8 @@ import java.util.UUID
 
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import com.mabrcosta.keysmanager.users.business.api.{KeysStack, KeysService, NotFound}
+import com.mabrcosta.keysmanager.core.business.api.{Error, NotFound}
+import com.mabrcosta.keysmanager.users.business.api.{KeysService, KeysStack, NotFound}
 import com.mabrcosta.keysmanager.users.business.{KeysStackInterpreter, api}
 import com.mabrcosta.keysmanager.users.data.{Key, KeyData}
 import com.mabrcosta.keysmanager.users.rest.KeysHttpService
@@ -70,7 +71,7 @@ class KeysHttpServiceSpec extends AsyncWordSpec with ScalatestRouteTest with Mat
         val effect = Eff.pure[KeysStack, Key](key)
 
         Mockito
-          .when(keyService.addKey[KeysStack](ArgumentMatchers.eq(keyValue))(ArgumentMatchers.any(),
+          .when(keyService.add[KeysStack](ArgumentMatchers.eq(keyValue))(ArgumentMatchers.any(),
                                                                                 ArgumentMatchers.any()))
           .thenReturn(Eff.pure[KeysStack, Key](key))
 
@@ -89,11 +90,11 @@ class KeysHttpServiceSpec extends AsyncWordSpec with ScalatestRouteTest with Mat
       "return a NotFound error" in {
         val uidKey = UUID.randomUUID()
         val error = NotFound(s"Unable to find key with uid $uidKey")
-        val effect = EitherCreation.left[KeysStack, api.Error, Boolean](error)
+        val effect = EitherCreation.left[KeysStack, Error, Boolean](error)
 
         Mockito
           .when(
-            keyService.deleteKey[KeysStack](ArgumentMatchers.eq(uidKey))(ArgumentMatchers.any(),
+            keyService.delete[KeysStack](ArgumentMatchers.eq(uidKey))(ArgumentMatchers.any(),
                                                                              ArgumentMatchers.any(),
                                                                              ArgumentMatchers.any()))
           .thenReturn(effect)
@@ -114,7 +115,7 @@ class KeysHttpServiceSpec extends AsyncWordSpec with ScalatestRouteTest with Mat
 
         Mockito
           .when(
-            keyService.deleteKey[KeysStack](ArgumentMatchers.eq(uidKey))(ArgumentMatchers.any(),
+            keyService.delete[KeysStack](ArgumentMatchers.eq(uidKey))(ArgumentMatchers.any(),
                                                                              ArgumentMatchers.any(),
                                                                              ArgumentMatchers.any()))
           .thenReturn(effect)
@@ -132,11 +133,11 @@ class KeysHttpServiceSpec extends AsyncWordSpec with ScalatestRouteTest with Mat
     mockEffectInterpreter(effect, Right(result))
   }
 
-  private def mockEffectInterpreter[T](effect: Eff[KeysStack, T], error: api.Error): Unit = {
+  private def mockEffectInterpreter[T](effect: Eff[KeysStack, T], error: Error): Unit = {
     mockEffectInterpreter(effect, Left(error))
   }
 
-  private def mockEffectInterpreter[T](effect: Eff[KeysStack, T], result: Either[api.Error, T]): Unit = {
+  private def mockEffectInterpreter[T](effect: Eff[KeysStack, T], result: Either[Error, T]): Unit = {
     Mockito
       .when(interpreter.run(ArgumentMatchers.eq(effect), ArgumentMatchers.eq(uidOwner)))
       .thenReturn(Future.successful(result))

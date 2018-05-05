@@ -3,6 +3,7 @@ package com.mabrcosta.keysmanager.users.business
 import java.util.UUID
 
 import cats.data.Reader
+import com.mabrcosta.keysmanager.core.business.api.Error
 import org.atnos.eff.{Fx, TimedFuture, |=}
 import slick.dbio.DBIO
 

@@ -28,4 +28,9 @@ class MachinesGroupMachinesRepository @Inject()(private val jdbcProfile: JdbcPro
       updateInstant) <> (MachinesGroupMachine.tupled, MachinesGroupMachine.unapply)
   }
 
+  private lazy val findForMachineCompiled = Compiled(
+    (uidMachine: Rep[UUID]) => tableQuery.filter(_.uidMachine === uidMachine))
+
+  def findForMachine(uidMachine: UUID): DBIO[Seq[MachinesGroupMachine]] = findForMachineCompiled(uidMachine).result
+
 }

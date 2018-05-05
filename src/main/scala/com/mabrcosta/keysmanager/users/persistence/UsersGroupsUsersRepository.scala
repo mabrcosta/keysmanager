@@ -28,4 +28,8 @@ class UsersGroupsUsersRepository @Inject()(private val jdbcProfile: JdbcProfile)
         updateInstant) <> (UsersGroupUser.tupled, UsersGroupUser.unapply)
   }
 
+  def getForUserGroups(uidUsersGroups: Seq[UUID]): DBIO[Seq[UsersGroupUser]] = {
+    tableQuery.filter(_.uidUsersGroup inSet uidUsersGroups).result
+  }
+
 }

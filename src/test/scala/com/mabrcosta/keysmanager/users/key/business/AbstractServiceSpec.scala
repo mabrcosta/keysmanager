@@ -2,6 +2,7 @@ package com.mabrcosta.keysmanager.users.key.business
 
 import java.util.UUID
 
+import com.mabrcosta.keysmanager.core.business.api.Error
 import com.mabrcosta.keysmanager.core.persistence.util._
 import com.mabrcosta.keysmanager.users.business.api.KeysStack
 import com.mabrcosta.keysmanager.users.business.{KeysStackInterpreter, api}
@@ -34,7 +35,7 @@ trait AbstractServiceSpec extends AsyncWordSpec with MockitoSugar {
 
   def assertLeft[T](effect: Eff[KeysStack, T],
                     uidOwner: UUID,
-                    errorAssertion: api.Error => Assertion): Future[Assertion] = {
+                    errorAssertion: Error => Assertion): Future[Assertion] = {
 
     assertFutureSuccess[T](effect, uidOwner, {
       case Left(error)  => errorAssertion(error)
@@ -44,7 +45,7 @@ trait AbstractServiceSpec extends AsyncWordSpec with MockitoSugar {
 
   def assertFutureSuccess[T](effect: Eff[KeysStack, T],
                              uidOwner: UUID,
-                             valueAssertion: Either[api.Error, T] => Assertion): Future[Assertion] = {
+                             valueAssertion: Either[Error, T] => Assertion): Future[Assertion] = {
     runStack(effect, uidOwner).map(valueAssertion).recover {
       case ex: Throwable => {
         ex.printStackTrace()
@@ -53,7 +54,7 @@ trait AbstractServiceSpec extends AsyncWordSpec with MockitoSugar {
     }
   }
 
-  def runStack[T](effect: Eff[KeysStack, T], uidOwner: UUID): Future[Either[api.Error, T]] = {
+  def runStack[T](effect: Eff[KeysStack, T], uidOwner: UUID): Future[Either[Error, T]] = {
     val db = JdbcBackend.Database.forURL("jdbc:h2:mem:test")
     val backend = new WithSessionJdbcBackend(db)
     val asyncDatabase = new JdbcProfileAsyncDatabase(db, backend)

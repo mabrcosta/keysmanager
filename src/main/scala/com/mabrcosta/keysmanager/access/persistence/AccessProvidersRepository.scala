@@ -4,16 +4,16 @@ import java.time.Instant
 import java.util.UUID
 
 import com.mabrcosta.keysmanager.access.data.AccessProvider
+import com.mabrcosta.keysmanager.access.persistence.api.AccessProvidersDal
 import com.mabrcosta.keysmanager.core.persistence.{BaseDBIORepository, DatabaseDal, PersistenceSchema}
-import com.mabrcosta.keysmanager.users.data.Key
 import javax.inject.Inject
 import slick.ast.BaseTypedType
 import slick.dbio.{DBIO => SlickDBIO}
-import slick.jdbc.JdbcProfile
+import slick.jdbc.{JdbcProfile, JdbcType}
 
 class AccessProvidersRepository @Inject()(private val jdbcProfile: JdbcProfile)
     extends BaseDBIORepository[AccessProvider, UUID](jdbcProfile)
-    with DatabaseDal[AccessProvider, UUID, SlickDBIO] {
+    with AccessProvidersDal[SlickDBIO] {
 
   import profile.api._
 
@@ -37,6 +37,14 @@ class AccessProvidersRepository @Inject()(private val jdbcProfile: JdbcProfile)
        uidLastModifierUser,
        creationInstant,
        updateInstant) <> (AccessProvider.tupled, AccessProvider.unapply)
+  }
+
+  def getForMachinesProviders(uidMachinesProviders: Seq[UUID], at: Instant): DBIO[Seq[AccessProvider]] = {
+    implicit val dateMapper: JdbcType[Instant] with BaseTypedType[Instant] = DateMapper.instant2SqlTimestampMapper
+    tableQuery
+      .filter(_.uidMachineAccessProvider inSet uidMachinesProviders)
+      .filter(a => a.startInstant >= at && a.endInstant < at)
+      .result
   }
 
 }
