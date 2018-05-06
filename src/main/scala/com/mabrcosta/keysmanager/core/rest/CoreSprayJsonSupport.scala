@@ -4,7 +4,7 @@ import java.time.Instant
 import java.util.UUID
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
-import spray.json.{DefaultJsonProtocol, DeserializationException, JsString, JsValue, JsonFormat}
+import spray.json.{DefaultJsonProtocol, JsString, JsValue, JsonFormat, deserializationError}
 
 trait CoreSprayJsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
 
@@ -13,7 +13,7 @@ trait CoreSprayJsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
     def read(value: JsValue): UUID = {
       value match {
         case JsString(uuid) => UUID.fromString(uuid)
-        case _              => throw DeserializationException("Expected hexadecimal UUID string")
+        case _              => deserializationError("Expected hexadecimal UUID string")
       }
     }
   }
@@ -26,7 +26,7 @@ trait CoreSprayJsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
     def read(value: JsValue): Instant = {
       value match {
         case JsString(instant) => Instant.from(formatter.parse(instant))
-        case _                 => throw DeserializationException("Expected hexadecimal UUID string")
+        case _                 => deserializationError("Expected Instant as JsString")
       }
     }
   }

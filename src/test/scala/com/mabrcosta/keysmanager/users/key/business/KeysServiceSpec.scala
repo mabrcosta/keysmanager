@@ -26,7 +26,7 @@ class KeysServiceSpec extends AbstractServiceSpec {
     "the owner have no keys" should {
       "return an empty sequence" in {
         mockDbInteraction(keysDal.findForOwner(uidOwner), Seq[Key]())
-        assertRight[Seq[Key]](keyService.getForOwner[KeysStack],
+        assertRight[Seq[Key]](keyService.getForOwner[Stack],
                               uidOwner,
                               result => if (result.isEmpty) succeed else fail(result.toString()))
       }
@@ -36,7 +36,7 @@ class KeysServiceSpec extends AbstractServiceSpec {
         val values =
           Seq(Key(value = "key1", uidOwnerSubject = uidOwner), Key(value = "key2", uidOwnerSubject = uidOwner))
         mockDbInteraction(keysDal.findForOwner(uidOwner), values)
-        assertRight[Seq[Key]](keyService.getForOwner[KeysStack],
+        assertRight[Seq[Key]](keyService.getForOwner[Stack],
                               uidOwner,
                               result => if (result.size == 2 && result == values) succeed else fail(result.toString()))
       }
@@ -58,7 +58,7 @@ class KeysServiceSpec extends AbstractServiceSpec {
           })
 
         assertRight[Key](
-          keyService.add[KeysStack](keyValue),
+          keyService.add[Stack](keyValue),
           uidOwner,
           result => if (keyValueArgumentMatcher(keyValue).matches(result)) succeed else fail(result.toString))
       }
@@ -71,7 +71,7 @@ class KeysServiceSpec extends AbstractServiceSpec {
         val uidKey = UUID.randomUUID()
         val response: Option[Key] = None
         mockDbInteraction(keysDal.findForOwner(uidKey, uidOwner), response)
-        val res = assertLeft[Boolean](keyService.delete[KeysStack](uidKey), uidOwner, {
+        val res = assertLeft[Boolean](keyService.delete[Stack](uidKey), uidOwner, {
           case NotFound(_) => succeed
           case res         => fail(res.toString)
         })
@@ -86,7 +86,7 @@ class KeysServiceSpec extends AbstractServiceSpec {
         val response = Key(id = Some(uidKey), value = "key_value", uidOwnerSubject = uidOwner)
         mockDbInteraction(keysDal.findForOwner(uidKey, uidOwner), Some(response))
         mockDbInteraction(keysDal.delete(response), response)
-        assertRight[Boolean](keyService.delete[KeysStack](uidKey), uidOwner, result => if (result) succeed else fail)
+        assertRight[Boolean](keyService.delete[Stack](uidKey), uidOwner, result => if (result) succeed else fail)
       }
     }
   }

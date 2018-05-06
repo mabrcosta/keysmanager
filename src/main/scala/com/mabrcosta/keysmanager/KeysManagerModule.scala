@@ -3,11 +3,12 @@ package com.mabrcosta.keysmanager
 import java.net.URI
 
 import com.google.inject.{Provides, TypeLiteral}
+import com.mabrcosta.keysmanager.core.business.StackInterpreter
 import com.mabrcosta.keysmanager.core.config.properties.ServerProperties
 import com.mabrcosta.keysmanager.core.data.{ServerAPIConfiguration, ServerConfiguration}
 import com.mabrcosta.keysmanager.core.persistence.PersistenceSchema
 import com.mabrcosta.keysmanager.core.persistence.util.{DatabaseMigratorInfo, EffDbExecutorDBIOFuture, EffDbExecutorId, EffectsDatabaseExecutor}
-import com.mabrcosta.keysmanager.users.business.{KeysServiceImpl, KeysStackInterpreter}
+import com.mabrcosta.keysmanager.users.business.KeysServiceImpl
 import com.mabrcosta.keysmanager.users.business.api.KeysService
 import com.mabrcosta.keysmanager.users.persistence.KeysRepository
 import com.mabrcosta.keysmanager.users.persistence.api.KeysDal
@@ -34,7 +35,7 @@ class KeysManagerModule extends ScalaModule {
       .to(classOf[EffDbExecutorDBIOFuture])
       .in(classOf[Singleton])
 
-    bind[KeysStackInterpreter].in(classOf[Singleton])
+    bind[StackInterpreter].in(classOf[Singleton])
 
     addMigrationInfo(DatabaseMigratorInfo(PersistenceSchema.schema, Seq(migrationsResourcesPackage)))
   }
