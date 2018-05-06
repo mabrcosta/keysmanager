@@ -29,6 +29,10 @@ class KeysServiceImpl[TDBIO[_], TDBOut[_]] @Inject()(
     } yield keys
   }
 
+  override def getForOwners[R: _tDBOut](uidOwners: Seq[UUID]): Eff[R, Seq[Key]] = {
+    keysDal.findForOwners(uidOwners).execute
+  }
+
   override def add[R: _tDBOut: _ownerReader](keyValue: String): Eff[R, Key] = {
     for {
       uidOwner <- ask

@@ -33,12 +33,10 @@ class MachinesServiceImpl[TDBIO[_], TDBOut[_]] @Inject()(
       machine <- if (machineOpt.isDefined) right(machineOpt.get)
       else left[R, Error, Machine](NotFound(s"Unable to find machine for hostname $hostname"))
       groups <- machinesGroupService.getWithMachine(machine.id.get)
-      accessProviders <- accessService.getForMachines(
+      keys <- accessService.getAuthorizedKeys(
         groups.map(_.uidMachineAccessProvider) :+ machine.uidMachineAccessProvider,
         Instant.now())
-    } yield {
-      null
-    }
+    } yield keys
   }
 
   override def get[R: _tDBOut: _errorEither](uidMachine: UUID): Eff[R, Machine] = {

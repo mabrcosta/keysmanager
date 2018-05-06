@@ -39,7 +39,7 @@ class AccessProvidersRepository @Inject()(private val jdbcProfile: JdbcProfile)
        updateInstant) <> (AccessProvider.tupled, AccessProvider.unapply)
   }
 
-  def getForMachinesProviders(uidMachinesProviders: Seq[UUID], at: Instant): DBIO[Seq[AccessProvider]] = {
+  def findForMachinesProviders(uidMachinesProviders: Seq[UUID], at: Instant): DBIO[Seq[AccessProvider]] = {
     implicit val dateMapper: JdbcType[Instant] with BaseTypedType[Instant] = DateMapper.instant2SqlTimestampMapper
     tableQuery
       .filter(_.uidMachineAccessProvider inSet uidMachinesProviders)

@@ -8,6 +8,6 @@ import com.mabrcosta.keysmanager.core.persistence.DatabaseDal
 
 trait AccessProvidersDal[TIO[_]] extends DatabaseDal[AccessProvider, UUID, TIO] {
 
-  def getForMachinesProviders(uidMachinesProviders: Seq[UUID], at: Instant): TIO[Seq[AccessProvider]]
+  def findForMachinesProviders(uidMachinesProviders: Seq[UUID], at: Instant): TIO[Seq[AccessProvider]]
 
 }

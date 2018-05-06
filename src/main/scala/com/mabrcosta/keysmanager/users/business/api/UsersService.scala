@@ -10,4 +10,8 @@ trait UsersService[TDBIO[_], TDBOut[_]] extends BaseService[TDBIO, TDBOut] {
 
   def get[R : _tDBOut: _errorEither](uidUser: UUID): Eff[R, User]
 
+  def get[R : _tDBOut: _errorEither](uidUsers: Seq[UUID]): Eff[R, Seq[User]]
+
+  def getWithProviders[R : _tDBOut](uidUsersProviders: Seq[UUID]): Eff[R, Seq[User]]
+
 }

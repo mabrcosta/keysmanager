@@ -44,4 +44,8 @@ class KeysRepository @Inject()(private val jdbcProfile: JdbcProfile)
   def findForOwner(uid: UUID, uidOwner: UUID): DBIO[Option[Key]] =
     findForUIDAndOwnerCompiled(uid, uidOwner).result.headOption
 
+  def findForOwners(uidOwners: Seq[UUID]): DBIO[Seq[Key]] = {
+    tableQuery.filter(_.uidOwnerSubject inSet uidOwners).result
+  }
+
 }

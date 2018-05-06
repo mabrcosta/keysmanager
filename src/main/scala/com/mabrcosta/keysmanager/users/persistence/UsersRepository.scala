@@ -2,8 +2,9 @@ package com.mabrcosta.keysmanager.users.persistence
 
 import java.util.UUID
 
-import com.mabrcosta.keysmanager.core.persistence.{BaseDBIORepository, DatabaseDal, PersistenceSchema}
+import com.mabrcosta.keysmanager.core.persistence.{BaseDBIORepository, PersistenceSchema}
 import com.mabrcosta.keysmanager.users.data.User
+import com.mabrcosta.keysmanager.users.persistence.api.UsersDal
 import javax.inject.Inject
 import slick.ast.BaseTypedType
 import slick.dbio.{DBIO => SlickDBIO}
@@ -11,7 +12,7 @@ import slick.jdbc.JdbcProfile
 
 class UsersRepository @Inject()(private val jdbcProfile: JdbcProfile)
     extends BaseDBIORepository[User, UUID](jdbcProfile)
-    with DatabaseDal[User, UUID, SlickDBIO] {
+    with UsersDal[SlickDBIO] {
 
   import profile.api._
 
@@ -29,7 +30,7 @@ class UsersRepository @Inject()(private val jdbcProfile: JdbcProfile)
         updateInstant) <> (User.tupled, User.unapply)
   }
 
-  def getForUserAccessProviders(uidUsersAccessProviders: Seq[UUID]): DBIO[Seq[User]] = {
+  def findForUserAccessProviders(uidUsersAccessProviders: Seq[UUID]): DBIO[Seq[User]] = {
     tableQuery.filter(_.uidUserAccessProvider inSet uidUsersAccessProviders).result
   }
 

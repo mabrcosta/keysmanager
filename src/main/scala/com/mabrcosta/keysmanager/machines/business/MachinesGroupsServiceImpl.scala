@@ -6,8 +6,8 @@ import com.mabrcosta.keysmanager.core.business.api.{Error, NotFound}
 import com.mabrcosta.keysmanager.core.persistence.DatabaseDal
 import com.mabrcosta.keysmanager.core.persistence.util.EffectsDatabaseExecutor
 import com.mabrcosta.keysmanager.machines.business.api.MachinesGroupsService
-import com.mabrcosta.keysmanager.machines.data.{Machine, MachinesGroup}
-import com.mabrcosta.keysmanager.machines.persistence.api.{MachinesDal, MachinesGroupMachinesDal}
+import com.mabrcosta.keysmanager.machines.data.MachinesGroup
+import com.mabrcosta.keysmanager.machines.persistence.api.MachinesGroupMachinesDal
 import com.mabrcosta.keysmanager.users.business.api._errorEither
 import javax.inject.Inject
 import org.atnos.eff.Eff
