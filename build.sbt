@@ -1,15 +1,19 @@
 name := "keysmanager-scala"
 version := "1.0.0"
+
+lazy val root = (project in file(".")).enablePlugins(PlayScala)
+
 scalaVersion := "2.12.8"
 
 scalacOptions += "-Ypartial-unification"
 
 libraryDependencies ++= {
-  val slickV = "3.3.0"
-  val akkaHttpV = "10.1.7"
+  val playSlickV = "4.0.0"
   Seq(
-    "com.typesafe.slick"            %%  "slick"                       % slickV,
-    "com.typesafe.slick"            %%  "slick-hikaricp"              % slickV,
+    guice,
+    evolutions,
+    "com.typesafe.play"             %%  "play-slick"                  % playSlickV,
+    "com.typesafe.play"             %%  "play-slick-evolutions"       % playSlickV,
     "com.byteslounge"               %%  "slick-repo"                  % "1.5.2",
     "org.postgresql"                %   "postgresql"                  % "42.2.5",
     "com.h2database"                %   "h2"                          % "1.4.197",
@@ -20,13 +24,9 @@ libraryDependencies ++= {
     "net.codingwell"                %%  "scala-guice"                 % "4.1.1",
     "org.typelevel"                 %%  "cats-core"                   % "1.6.0",
     "org.atnos"                     %%  "eff"                         % "5.4.1",
-    "com.typesafe.akka"             %%  "akka-http"                   % akkaHttpV,
-    "com.typesafe.akka"             %%  "akka-http-spray-json"        % akkaHttpV,
-    "com.typesafe.akka"             %%  "akka-stream"                 % "2.5.20",
     "org.scalatest"                 %%  "scalatest"                   % "3.0.5"     % Test,
-    "org.mockito"                   %   "mockito-core"                % "2.16.0"    % Test,
-    "com.typesafe.akka"             %%  "akka-http-testkit"           % akkaHttpV   % Test
+    "org.mockito"                   %   "mockito-core"                % "2.16.0"    % Test
   )
 }
 
-addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.6")
+addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.9")
