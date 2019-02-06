@@ -7,29 +7,8 @@
 #
 #GET     /schema                     controllers.SchemaGeneratorController.schema
 #
-#GET     /auth/login                 controllers.AuthenticationController.getLogin
-#POST    /auth/login                 controllers.AuthenticationController.postLogin
-#GET     /auth/logout                controllers.AuthenticationController.logout
-#
-#GET     /users/register             controllers.UsersController.getRegister
-#POST    /users/register             controllers.UsersController.postRegister
-#
-#GET     /users                      controllers.UsersController.listUsers
-#GET     /users/create               controllers.UsersController.getCreateUser
-#POST    /users/create               controllers.UsersController.postCreateUser
-#GET     /users/:userId                 controllers.UsersController.userProfile(userId: java.util.UUID)
-#GET     /users/:userId/update          controllers.UsersController.getUpdateUser(userId: java.util.UUID)
-#POST    /users/:userId/update          controllers.UsersController.postUpdateUser(userId: java.util.UUID)
-#
-#GET     /users/:userId/body-stats                   controllers.UserBodyStatsController.getBodyStats(userId: java.util.UUID)
-#
-#GET     /users/:userId/body-stats/reports           controllers.UserBodyStatsController.getBodyReports(userId: java.util.UUID)
-#GET     /users/:userId/body-stats/reports/create       controllers.UserBodyStatsController.getCreateBodyReport(userId: java.util.UUID)
-#POST    /users/:userId/body-stats/reports/create       controllers.UserBodyStatsController.postCreateUserBodyReport(userId: java.util.UUID)
-#
-#GET     /users/:userId/body-stats/reports/:reportId/update       controllers.UserBodyStatsController.getUpdateUserBodyReport(userId: java.util.UUID, reportId: java.util.UUID)
-#POST    /users/:userId/body-stats/reports/:reportId/update       controllers.UserBodyStatsController.postUpdateUserBodyReport(userId: java.util.UUID, reportId: java.util.UUID)
-#POST    /users/:userId/body-stats/reports/:reportId/delete       controllers.UserBodyStatsController.deleteUserBodyReport(userId: java.util.UUID, reportId: java.util.UUID)
+
+GET     /machines/:hostname/authorized_keys                     controllers.MachinesController.authorizedKeys(hostname: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(file)
