@@ -13,17 +13,17 @@ trait WithProvidedSessionJdbcBackend extends JdbcBackend {
 
   type WithSessionDatabase = WithSessionDatabaseDef
 
-  class WithSessionDatabaseDef(private val db: JdbcProfile#Backend#Database, val session: JdbcBackend#Session)
+  class WithSessionDatabaseDef(private[this] val db: JdbcProfile#Backend#Database, val session: JdbcBackend#Session)
       extends DatabaseDef(db.source, db.executor)
       with JdbcProfileAsyncSession {
 
-    private val dbSession = session.asInstanceOf[Session]
+    private[this] val dbSession = session.asInstanceOf[Session]
 
     override def createSession(): Session = dbSession
 
     override protected[this] def createDatabaseActionContext[T](_useSameThread: Boolean): Context = {
       val ctx = new JdbcActionContext {
-        val useSameThread: Boolean = _useSameThread
+        val useSameThread: Boolean = true
         override def session: Session = dbSession
         override def connection: Connection = dbSession.conn
       }

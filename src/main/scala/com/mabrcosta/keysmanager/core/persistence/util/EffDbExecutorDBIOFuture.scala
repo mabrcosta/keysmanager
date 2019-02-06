@@ -6,7 +6,6 @@ import slick.dbio.DBIO
 import slick.jdbc.JdbcProfile
 
 
-
 class EffDbExecutorDBIOFuture @Inject()(implicit val profile: JdbcProfile,
                                          implicit val db: JdbcProfile#Backend#Database)
   extends EffectsDatabaseExecutor[DBIO, TimedFuture] {
@@ -14,7 +13,7 @@ class EffDbExecutorDBIOFuture @Inject()(implicit val profile: JdbcProfile,
   implicit def apply[T](action: DBIO[T]): EffectsDatabaseActionExecutor[DBIO, TimedFuture, T] =
     new EffDbActionExecutorDBIOFuture[T](action)
 
-  class EffDbActionExecutorDBIOFuture[T](private val action: DBIO[T])(implicit db: JdbcProfile#Backend#Database,
+  class EffDbActionExecutorDBIOFuture[T](private[this] val action: DBIO[T])(implicit db: JdbcProfile#Backend#Database,
                                                                       profile: JdbcProfile)
       extends EffectsDatabaseActionExecutor[DBIO, TimedFuture, T] {
 

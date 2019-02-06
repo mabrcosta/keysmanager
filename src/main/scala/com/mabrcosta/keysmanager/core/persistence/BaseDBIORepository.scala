@@ -4,13 +4,13 @@ import java.time.Instant
 import java.util.UUID
 
 import com.byteslounge.slickrepo.meta.Entity
-import com.mabrcosta.keysmanager.core.persistence.util.DateMapper
+import com.mabrcosta.keysmanager.core.persistence.util.TypeMapper
 import slick.ast.BaseTypedType
 import slick.jdbc.{JdbcProfile, JdbcType}
 
 abstract class BaseDBIORepository[TEntity <: Entity[TEntity, TKey], TKey](
     override val profile: JdbcProfile)
-    extends SimpleDBIORepository[TEntity, TKey](profile) with DateMapper {
+    extends SimpleDBIORepository[TEntity, TKey](profile) with TypeMapper {
 
   import profile.api._
 

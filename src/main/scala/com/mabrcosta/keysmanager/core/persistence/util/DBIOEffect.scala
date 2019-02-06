@@ -21,7 +21,7 @@ trait DBIOInterpretation extends DBIOTypes {
     new DBIOInterpretationOps[R, A](effect)
 }
 
-final class DBIOInterpretationOps[R, A](private val effect: Eff[R, A]) {
+final class DBIOInterpretationOps[R, A](private[this] val effect: Eff[R, A]) {
 
   def runDBIO[U](implicit m: Member.Aux[SlickDBIO, R, U],
                  future: FutureCreation._future[U],

@@ -76,9 +76,9 @@ trait DatabaseExecutorDBIOToFuture extends DatabaseExecutor[SlickDBIO, _Future] 
     fromFuture(db.run(action.transactionally).map(integerToBooleanMap))
   }
 
-  private def integerFoldFunction(p: Int, c: Int): Int = if (p == c) p else 0
+  private[this] def integerFoldFunction(p: Int, c: Int): Int = if (p == c) p else 0
 
-  private def integerToBooleanMap(v: Int): Boolean = v match {
+  private[this] def integerToBooleanMap(v: Int): Boolean = v match {
     case 1      => true
     case _: Int => false
   }
