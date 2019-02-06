@@ -4,9 +4,12 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import com.google.inject.Guice
+import com.mabrcosta.keysmanager.access.conf.AccessModule
 import com.mabrcosta.keysmanager.core.config._
 import com.mabrcosta.keysmanager.core.data.ServerConfiguration
 import com.mabrcosta.keysmanager.core.persistence.util.DatabaseMigrator
+import com.mabrcosta.keysmanager.machines.conf.MachinesModule
+import com.mabrcosta.keysmanager.users.conf.UsersModule
 import com.mabrcosta.keysmanager.users.rest.KeysHttpService
 import com.typesafe.scalalogging.LazyLogging
 
@@ -16,7 +19,10 @@ object KeysManager extends App with LazyLogging {
       new AkkaModule,
       new ConfigModule,
       new JdbcPersistenceModule,
-      new KeysManagerModule
+      new CoreModule,
+      new UsersModule,
+      new MachinesModule,
+      new AccessModule
     )
 
     import net.codingwell.scalaguice.InjectorExtensions._

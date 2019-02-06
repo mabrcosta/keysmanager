@@ -1,4 +1,4 @@
-package com.mabrcosta.keysmanager.users.persistence
+package com.mabrcosta.keysmanager.users.persistence.func
 
 import java.util.UUID
 

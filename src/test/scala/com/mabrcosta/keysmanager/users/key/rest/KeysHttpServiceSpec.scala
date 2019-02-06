@@ -6,8 +6,7 @@ import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import com.mabrcosta.keysmanager.core.business.StackInterpreter
 import com.mabrcosta.keysmanager.core.business.api.{Error, NotFound}
-import com.mabrcosta.keysmanager.users.business.api.{KeysService, NotFound, Stack}
-import com.mabrcosta.keysmanager.users.business.api
+import com.mabrcosta.keysmanager.users.business.api.{KeysService, Stack}
 import com.mabrcosta.keysmanager.users.data.{Key, KeyData}
 import com.mabrcosta.keysmanager.users.rest.KeysHttpService
 import org.atnos.eff.{Eff, EitherCreation}

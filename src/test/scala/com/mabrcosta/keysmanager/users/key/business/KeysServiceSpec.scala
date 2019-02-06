@@ -2,9 +2,10 @@ package com.mabrcosta.keysmanager.users.key.business
 
 import java.util.UUID
 
+import com.mabrcosta.keysmanager.core.business.api.NotFound
 import com.mabrcosta.keysmanager.core.persistence.util.EffDbExecutorId
-import com.mabrcosta.keysmanager.users.business.KeysServiceImpl
 import com.mabrcosta.keysmanager.users.business.api._
+import com.mabrcosta.keysmanager.users.business.func.KeysServiceImpl
 import com.mabrcosta.keysmanager.users.data.Key
 import com.mabrcosta.keysmanager.users.persistence.api.KeysDal
 import org.atnos.eff.MemberIn._

@@ -2,8 +2,9 @@ package com.mabrcosta.keysmanager.machines.persistence
 
 import java.util.UUID
 
-import com.mabrcosta.keysmanager.core.persistence.{BaseDBIORepository, DatabaseDal, PersistenceSchema}
+import com.mabrcosta.keysmanager.core.persistence.{BaseDBIORepository, PersistenceSchema}
 import com.mabrcosta.keysmanager.machines.data.MachinesGroupMachine
+import com.mabrcosta.keysmanager.machines.persistence.api.MachinesGroupMachinesDal
 import javax.inject.Inject
 import slick.ast.BaseTypedType
 import slick.dbio.{DBIO => SlickDBIO}
@@ -11,7 +12,7 @@ import slick.jdbc.JdbcProfile
 
 class MachinesGroupMachinesRepository @Inject()(private val jdbcProfile: JdbcProfile)
     extends BaseDBIORepository[MachinesGroupMachine, UUID](jdbcProfile)
-    with DatabaseDal[MachinesGroupMachine, UUID, SlickDBIO] {
+    with MachinesGroupMachinesDal[SlickDBIO] {
 
   import profile.api._
 

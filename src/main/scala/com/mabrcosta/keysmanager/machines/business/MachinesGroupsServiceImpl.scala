@@ -3,11 +3,10 @@ package com.mabrcosta.keysmanager.machines.business
 import java.util.UUID
 
 import com.mabrcosta.keysmanager.core.business.api.{Error, NotFound}
-import com.mabrcosta.keysmanager.core.persistence.DatabaseDal
 import com.mabrcosta.keysmanager.core.persistence.util.EffectsDatabaseExecutor
 import com.mabrcosta.keysmanager.machines.business.api.MachinesGroupsService
 import com.mabrcosta.keysmanager.machines.data.MachinesGroup
-import com.mabrcosta.keysmanager.machines.persistence.api.MachinesGroupMachinesDal
+import com.mabrcosta.keysmanager.machines.persistence.api.{MachinesGroupsDal, MachinesGroupMachinesDal}
 import com.mabrcosta.keysmanager.users.business.api._errorEither
 import javax.inject.Inject
 import org.atnos.eff.Eff
@@ -16,10 +15,10 @@ import org.atnos.eff.EitherEffect.{left, right}
 import scala.concurrent.ExecutionContext
 
 class MachinesGroupsServiceImpl[TDBIO[_], TDBOut[_]] @Inject()(
-    private val machinesGroups: DatabaseDal[MachinesGroup, UUID, TDBIO],
-    private val machinesGroupMachinesDal: MachinesGroupMachinesDal[TDBIO],
-    private val effectsDatabaseExecutor: EffectsDatabaseExecutor[TDBIO, TDBOut],
-    implicit val executionContext: ExecutionContext)
+                                                                private val machinesGroups: MachinesGroupsDal[TDBIO],
+                                                                private val machinesGroupMachinesDal: MachinesGroupMachinesDal[TDBIO],
+                                                                private val effectsDatabaseExecutor: EffectsDatabaseExecutor[TDBIO, TDBOut],
+                                                                implicit val executionContext: ExecutionContext)
     extends MachinesGroupsService[TDBIO, TDBOut] {
 
   import effectsDatabaseExecutor._

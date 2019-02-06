@@ -3,13 +3,9 @@ package com.mabrcosta.keysmanager.users.core.persistence
 import java.sql.SQLException
 import java.util.UUID
 
-import com.mabrcosta.keysmanager.core.persistence.util.{
-  JdbcProfileAsyncDatabase,
-  WithProvidedSessionJdbcBackend,
-  WithSessionJdbcBackend
-}
+import com.mabrcosta.keysmanager.core.persistence.util.{JdbcProfileAsyncDatabase, WithProvidedSessionJdbcBackend, WithSessionJdbcBackend}
 import com.mabrcosta.keysmanager.users.data.Key
-import com.mabrcosta.keysmanager.users.persistence.KeysRepository
+import com.mabrcosta.keysmanager.users.persistence.func.KeysRepository
 import org.scalatest.{AsyncWordSpec, FutureOutcome}
 import slick.jdbc
 import slick.jdbc.{H2Profile, JdbcBackend}

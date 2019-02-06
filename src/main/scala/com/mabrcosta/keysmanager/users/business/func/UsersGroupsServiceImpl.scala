@@ -1,9 +1,8 @@
-package com.mabrcosta.keysmanager.users.business
+package com.mabrcosta.keysmanager.users.business.func
 
 import java.util.UUID
 
 import com.mabrcosta.keysmanager.core.business.api.{Error, NotFound}
-import com.mabrcosta.keysmanager.core.persistence.DatabaseDal
 import com.mabrcosta.keysmanager.core.persistence.util.EffectsDatabaseExecutor
 import com.mabrcosta.keysmanager.users.business.api.{UsersGroupsService, _errorEither}
 import com.mabrcosta.keysmanager.users.data.{UsersGroup, UsersGroupUser}

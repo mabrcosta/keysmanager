@@ -1,11 +1,11 @@
-package com.mabrcosta.keysmanager.access.persistence
+package com.mabrcosta.keysmanager.access.persistence.func
 
 import java.time.Instant
 import java.util.UUID
 
 import com.mabrcosta.keysmanager.access.data.AccessProvider
 import com.mabrcosta.keysmanager.access.persistence.api.AccessProvidersDal
-import com.mabrcosta.keysmanager.core.persistence.{BaseDBIORepository, DatabaseDal, PersistenceSchema}
+import com.mabrcosta.keysmanager.core.persistence.{BaseDBIORepository, PersistenceSchema}
 import javax.inject.Inject
 import slick.ast.BaseTypedType
 import slick.dbio.{DBIO => SlickDBIO}
