@@ -1,4 +1,4 @@
-CREATE TABLE "PUBLIC"."users" (
+CREATE TABLE "users" (
   "id" UUID NOT NULL PRIMARY KEY,
   "first_name" varchar NOT NULL,
   "last_name" varchar NOT NULL,
@@ -8,7 +8,7 @@ CREATE TABLE "PUBLIC"."users" (
   "creation_instant" timestamp NOT NULL,
   "update_instant" timestamp NOT NULL
 );
-CREATE TABLE "PUBLIC"."users_groups" (
+CREATE TABLE "users_groups" (
   "id" UUID NOT NULL PRIMARY KEY,
   "name" varchar NOT NULL,
   "user_access_provider_id" UUID NOT NULL,
@@ -17,7 +17,7 @@ CREATE TABLE "PUBLIC"."users_groups" (
   "creation_instant" timestamp NOT NULL,
   "update_instant" timestamp NOT NULL
 );
-CREATE TABLE "PUBLIC"."users_groups_user" (
+CREATE TABLE "users_groups_user" (
   "id" UUID NOT NULL PRIMARY KEY,
   "user_id" UUID NOT NULL,
   "users_group_id" UUID NOT NULL,
@@ -26,10 +26,10 @@ CREATE TABLE "PUBLIC"."users_groups_user" (
   "creation_instant" timestamp NOT NULL,
   "update_instant" timestamp NOT NULL
 );
-CREATE TABLE "PUBLIC"."users_access_providers" (
+CREATE TABLE "users_access_providers" (
   "id" UUID NOT NULL PRIMARY KEY
 );
-CREATE TABLE "PUBLIC"."keys" (
+CREATE TABLE "keys" (
   "id" UUID NOT NULL PRIMARY KEY,
   "value" varchar NOT NULL UNIQUE,
   "owner_user_id" UUID NOT NULL,
@@ -38,7 +38,7 @@ CREATE TABLE "PUBLIC"."keys" (
   "creation_instant" timestamp NOT NULL,
   "update_instant" timestamp NOT NULL
 );
-CREATE TABLE "PUBLIC"."machines" (
+CREATE TABLE "machines" (
   "id" UUID NOT NULL PRIMARY KEY,
   "name" varchar NOT NULL,
   "hostname" varchar NOT NULL,
@@ -48,7 +48,7 @@ CREATE TABLE "PUBLIC"."machines" (
   "creation_instant" timestamp NOT NULL,
   "update_instant" timestamp NOT NULL
 );
-CREATE TABLE "PUBLIC"."machines_groups" (
+CREATE TABLE "machines_groups" (
   "id" UUID NOT NULL PRIMARY KEY,
   "name" varchar NOT NULL,
   "machine_access_provider_id" UUID NOT NULL,
@@ -57,7 +57,7 @@ CREATE TABLE "PUBLIC"."machines_groups" (
   "creation_instant" timestamp NOT NULL,
   "update_instant" timestamp NOT NULL
 );
-CREATE TABLE "PUBLIC"."machines_groups_machines" (
+CREATE TABLE "machines_groups_machines" (
   "id" UUID NOT NULL PRIMARY KEY,
   "machine_id" UUID NOT NULL,
   "machines_group_id" UUID NOT NULL,
@@ -66,10 +66,10 @@ CREATE TABLE "PUBLIC"."machines_groups_machines" (
   "creation_instant" timestamp NOT NULL,
   "update_instant" timestamp NOT NULL
 );
-CREATE TABLE "PUBLIC"."machines_access_providers" (
+CREATE TABLE "machines_access_providers" (
   "id" UUID NOT NULL PRIMARY KEY
 );
-CREATE TABLE "PUBLIC"."access_providers" (
+CREATE TABLE "access_providers" (
   "id" UUID NOT NULL PRIMARY KEY,
   "user_access_provider_id" UUID NOT NULL,
   "machine_access_provider_id" UUID NOT NULL,
