@@ -43,7 +43,7 @@ class AccessProvidersRepository @Inject()(private val jdbcProfile: JdbcProfile)
     implicit val dateMapper: JdbcType[Instant] with BaseTypedType[Instant] = DateMapper.instant2SqlTimestampMapper
     tableQuery
       .filter(_.uidMachineAccessProvider inSet uidMachinesProviders)
-      .filter(a => a.startInstant >= at && a.endInstant < at)
+      .filter(a => a.startInstant <= at && a.endInstant > at)
       .result
   }
 

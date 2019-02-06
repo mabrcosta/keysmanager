@@ -34,7 +34,7 @@ trait WithProvidedSessionJdbcBackend extends JdbcBackend {
     override protected[this] def createStreamingDatabaseActionContext[T](s: Subscriber[_ >: T],
                                                                          useSameThread: Boolean): StreamingContext = {
 
-      val ctx = new JdbcStreamingActionContext(s, useSameThread, this, true) {
+      val ctx = new JdbcStreamingActionContext(s, true, this, true) {
         override def session: Session = dbSession
         override def connection: Connection = dbSession.conn
       }

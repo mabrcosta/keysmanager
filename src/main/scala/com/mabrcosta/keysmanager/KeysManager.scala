@@ -9,8 +9,8 @@ import com.mabrcosta.keysmanager.core.config._
 import com.mabrcosta.keysmanager.core.data.ServerConfiguration
 import com.mabrcosta.keysmanager.core.persistence.util.DatabaseMigrator
 import com.mabrcosta.keysmanager.machines.conf.MachinesModule
+import com.mabrcosta.keysmanager.machines.rest.MachinesHttpService
 import com.mabrcosta.keysmanager.users.conf.UsersModule
-import com.mabrcosta.keysmanager.users.rest.KeysHttpService
 import com.typesafe.scalalogging.LazyLogging
 
 object KeysManager extends App with LazyLogging {
@@ -32,10 +32,10 @@ object KeysManager extends App with LazyLogging {
 
     injector.instance[DatabaseMigrator]
 
-    val restService = injector.instance[KeysHttpService]
+    val machinesRestService = injector.instance[MachinesHttpService]
     val configuration = injector.instance[ServerConfiguration]
 
-    Http().bindAndHandle(restService.routes, "0.0.0.0", port = configuration.port)
+    Http().bindAndHandle(machinesRestService.routes, "0.0.0.0", port = configuration.port)
   } catch {
     case e: Throwable => logger.error(e.getMessage, e)
   }
