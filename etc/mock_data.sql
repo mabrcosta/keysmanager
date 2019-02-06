@@ -1,0 +1,66 @@
+﻿-- create external user
+INSERT INTO users_access_providers
+VALUES ('17b3d4f7-7068-45bb-ad3e-799dd5a08091');
+
+INSERT INTO users VALUES ('91bb39d8-852e-4a5e-a99c-9fd09593352a', 'external', 'user', '17b3d4f7-7068-45bb-ad3e-799dd5a08091', '91bb39d8-852e-4a5e-a99c-9fd09593352a', '91bb39d8-852e-4a5e-a99c-9fd09593352a', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO users_access_providers
+VALUES ('7cff2462-5d73-43d1-99cf-45bb62690a3d');
+
+INSERT INTO users VALUES ('7cff2462-5d73-43d1-99cf-45bb62690a3d', 'admin', 'user', '7cff2462-5d73-43d1-99cf-45bb62690a3d', '7cff2462-5d73-43d1-99cf-45bb62690a3d', '7cff2462-5d73-43d1-99cf-45bb62690a3d', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+-- create external user group
+INSERT INTO users_access_providers
+VALUES ('df5e60f6-1c37-4b49-b69c-984d1ecd679a');
+
+INSERT INTO users_groups
+VALUES ('df5e60f6-1c37-4b49-b69c-984d1ecd679a', 'admin', 'df5e60f6-1c37-4b49-b69c-984d1ecd679a', '91bb39d8-852e-4a5e-a99c-9fd09593352a', '91bb39d8-852e-4a5e-a99c-9fd09593352a', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+-- add users to group
+INSERT INTO users_groups_user
+VALUES ('df5e60f6-1c37-4b49-b69c-984d1ecd679a', '91bb39d8-852e-4a5e-a99c-9fd09593352a', 'df5e60f6-1c37-4b49-b69c-984d1ecd679a', '91bb39d8-852e-4a5e-a99c-9fd09593352a', '91bb39d8-852e-4a5e-a99c-9fd09593352a', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+-- create machine 1
+INSERT INTO machines_access_providers
+VALUES ('b15e2d52-497a-4f13-ab11-42d95fff698b');
+
+INSERT INTO machines
+VALUES ('b15e2d52-497a-4f13-ab11-42d95fff698b', 'machine_1', '10.10.10.1', 'b15e2d52-497a-4f13-ab11-42d95fff698b', '91bb39d8-852e-4a5e-a99c-9fd09593352a', '91bb39d8-852e-4a5e-a99c-9fd09593352a', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+-- create machine 2
+INSERT INTO machines_access_providers
+VALUES ('8fc329a2-e728-475a-90fd-dc2f83f207da');
+
+INSERT INTO machines
+VALUES ('8fc329a2-e728-475a-90fd-dc2f83f207da', 'machine_2', '10.10.10.2', '8fc329a2-e728-475a-90fd-dc2f83f207da', '91bb39d8-852e-4a5e-a99c-9fd09593352a', '91bb39d8-852e-4a5e-a99c-9fd09593352a', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+-- create machine group
+INSERT INTO machines_access_providers
+VALUES ('e2b12171-cb80-45eb-86e2-05f3cf549ad7');
+
+INSERT INTO machines_groups
+VALUES ('e2b12171-cb80-45eb-86e2-05f3cf549ad7', 'group_1', 'e2b12171-cb80-45eb-86e2-05f3cf549ad7', '91bb39d8-852e-4a5e-a99c-9fd09593352a', '91bb39d8-852e-4a5e-a99c-9fd09593352a', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+-- add machines to group
+INSERT INTO machines_groups_machines
+VALUES ('e2b12171-cb80-45eb-86e2-05f3cf549ad7', 'b15e2d52-497a-4f13-ab11-42d95fff698b', 'e2b12171-cb80-45eb-86e2-05f3cf549ad7', '91bb39d8-852e-4a5e-a99c-9fd09593352a', '91bb39d8-852e-4a5e-a99c-9fd09593352a', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO machines_groups_machines
+VALUES ('69ac0e2f-f34d-4fa2-8026-becf298b3165', '8fc329a2-e728-475a-90fd-dc2f83f207da', 'e2b12171-cb80-45eb-86e2-05f3cf549ad7', '91bb39d8-852e-4a5e-a99c-9fd09593352a', '91bb39d8-852e-4a5e-a99c-9fd09593352a', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+-- create access providers
+INSERT INTO access_providers
+VALUES ('5af50fd7-383b-449a-80cf-3ee5601017d7', '17b3d4f7-7068-45bb-ad3e-799dd5a08091', 'e2b12171-cb80-45eb-86e2-05f3cf549ad7', CURRENT_TIMESTAMP, '2020-01-10 15:27:32.777614+00', '91bb39d8-852e-4a5e-a99c-9fd09593352a', '91bb39d8-852e-4a5e-a99c-9fd09593352a', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO access_providers
+VALUES ('d905fa73-17a8-447c-b5da-ccda168d717a', 'df5e60f6-1c37-4b49-b69c-984d1ecd679a', 'b15e2d52-497a-4f13-ab11-42d95fff698b', CURRENT_TIMESTAMP, '2020-01-10 15:27:32.777614+00', '91bb39d8-852e-4a5e-a99c-9fd09593352a', '91bb39d8-852e-4a5e-a99c-9fd09593352a', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+--- Keys
+INSERT INTO keys
+VALUES ('fc900050-8acd-464e-8713-bbda33f6b273', 'value admin', 'fc900050-8acd-464e-8713-bbda33f6b273', '91bb39d8-852e-4a5e-a99c-9fd09593352a', '91bb39d8-852e-4a5e-a99c-9fd09593352a', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO keys
+VALUES ('17b3d4f7-7068-45bb-ad3e-799dd5a08091', 'value external user', '91bb39d8-852e-4a5e-a99c-9fd09593352a', '91bb39d8-852e-4a5e-a99c-9fd09593352a', '91bb39d8-852e-4a5e-a99c-9fd09593352a', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO keys
+VALUES ('7cff2462-5d73-43d1-99cf-45bb62690a3d', 'value admin 2', '7cff2462-5d73-43d1-99cf-45bb62690a3d', '7cff2462-5d73-43d1-99cf-45bb62690a3d', '7cff2462-5d73-43d1-99cf-45bb62690a3d', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
