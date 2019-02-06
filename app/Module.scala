@@ -7,8 +7,6 @@ import com.mabrcosta.keysmanager.users.conf.UsersModule
 class Module extends AbstractModule {
 
   override def configure() = {
-//    install(new AkkaModule)
-//    install(new ConfigModule)
     install(new JdbcPersistenceModule)
     install(new CoreModule)
     install(new UsersModule)

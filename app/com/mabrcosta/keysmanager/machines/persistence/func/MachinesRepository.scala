@@ -1,8 +1,8 @@
-package com.mabrcosta.keysmanager.machines.persistence
+package com.mabrcosta.keysmanager.machines.persistence.func
 
 import java.util.UUID
 
-import com.mabrcosta.keysmanager.core.persistence.{BaseDBIORepository, DatabaseDal, PersistenceSchema}
+import com.mabrcosta.keysmanager.core.persistence.{BaseDBIORepository, PersistenceSchema}
 import com.mabrcosta.keysmanager.machines.data.Machine
 import com.mabrcosta.keysmanager.machines.persistence.api.MachinesDal
 import javax.inject.Inject

@@ -3,12 +3,12 @@ package com.mabrcosta.keysmanager.core.config
 import java.net.URI
 
 import com.google.inject.Provides
-import com.mabrcosta.keysmanager.core.business.StackInterpreter
 import com.mabrcosta.keysmanager.core.config.properties.ServerProperties
 import com.mabrcosta.keysmanager.core.data.{ServerAPIConfiguration, ServerConfiguration}
 import com.mabrcosta.keysmanager.core.persistence.PersistenceSchema
 import com.mabrcosta.keysmanager.core.persistence.util.DatabaseMigratorInfo
 import com.typesafe.config.Config
+import controllers.machines.interpreters.MachinesStackInterpreter
 import javax.inject.Singleton
 import net.codingwell.scalaguice.{ScalaModule, ScalaMultibinder}
 import org.atnos.eff.ExecutorServices
@@ -24,7 +24,7 @@ class CoreModule extends ScalaModule {
   private[this] def addMigrationInfo: DatabaseMigratorInfo => Unit = migrationsBinder.addBinding.toInstance(_)
 
   override def configure(): Unit = {
-    bind[StackInterpreter].in(classOf[Singleton])
+    bind[MachinesStackInterpreter].in(classOf[Singleton])
 
     addMigrationInfo(DatabaseMigratorInfo(PersistenceSchema.schema, Seq(migrationsResourcesPackage)))
   }

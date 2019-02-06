@@ -3,18 +3,20 @@ package com.mabrcosta.keysmanager.users.business
 import java.util.UUID
 
 import cats.data.Reader
-import com.mabrcosta.keysmanager.core.business.api.Error
-import org.atnos.eff.{Fx, TimedFuture, |=}
-import slick.dbio.DBIO
+import org.atnos.eff.|=
 
 package object api {
 
   type OwnerReader[A] = Reader[UUID, A]
   type _ownerReader[R] = OwnerReader |= R
 
-  type ErrorEither[A] = Error Either A
-  type _errorEither[R] = ErrorEither |= R
+  type KeysErrorEither[A] = KeysError Either A
+  type _keysErrorEither[R] = KeysErrorEither |= R
 
-  type Stack = Fx.fx4[OwnerReader[?], ErrorEither[?], DBIO, TimedFuture]
+  type UsersErrorEither[A] = UsersError Either A
+  type _usersErrorEither[R] = UsersErrorEither |= R
+
+  type UsersGroupsErrorEither[A] = UsersGroupsError Either A
+  type _usersGroupsErrorEither[R] = UsersGroupsErrorEither |= R
 
 }

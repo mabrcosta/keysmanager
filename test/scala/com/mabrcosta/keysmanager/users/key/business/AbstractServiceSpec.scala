@@ -2,11 +2,11 @@ package com.mabrcosta.keysmanager.users.key.business
 
 import java.util.UUID
 
-import com.mabrcosta.keysmanager.core.business.StackInterpreter
 import com.mabrcosta.keysmanager.core.business.api.Error
 import com.mabrcosta.keysmanager.core.persistence.util._
 import com.mabrcosta.keysmanager.users.business.api.Stack
 import com.mabrcosta.keysmanager.users.business.api
+import controllers.machines.interpreters.MachinesStackInterpreter
 import org.atnos.eff.concurrent.Scheduler
 import org.atnos.eff.{Eff, ExecutorServices}
 import org.mockito.Mockito
@@ -61,7 +61,7 @@ trait AbstractServiceSpec extends AsyncWordSpec with MockitoSugar {
     val asyncDatabase = new JdbcProfileAsyncDatabase(db, backend)
     val scheduler: Scheduler = ExecutorServices.schedulerFromGlobalExecutionContext
 
-    val interpreter = new StackInterpreter(asyncDatabase, executionContext, scheduler)
+    val interpreter = new MachinesStackInterpreter(asyncDatabase, executionContext, scheduler)
 
     interpreter.run(effect, uidOwner)
   }

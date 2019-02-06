@@ -2,9 +2,8 @@ package com.mabrcosta.keysmanager.users.business.func
 
 import java.util.UUID
 
-import com.mabrcosta.keysmanager.core.business.api.{Error, NotFound}
 import com.mabrcosta.keysmanager.core.persistence.util.EffectsDatabaseExecutor
-import com.mabrcosta.keysmanager.users.business.api.{UsersService, _errorEither}
+import com.mabrcosta.keysmanager.users.business.api.{UserNotFound, UsersError, UsersService, _usersErrorEither}
 import com.mabrcosta.keysmanager.users.data.User
 import com.mabrcosta.keysmanager.users.persistence.api.UsersDal
 import javax.inject.Inject
@@ -21,15 +20,15 @@ class UsersServiceImpl[TDBIO[_], TDBOut[_]] @Inject()(
 
   import effectsDatabaseExecutor._
 
-  override def get[R: _tDBOut: _errorEither](uidUser: UUID): Eff[R, User] = {
+  override def get[R: _tDBOut: _usersErrorEither](uidUser: UUID): Eff[R, User] = {
     for {
       userOpt <- usersDal.find(uidUser).execute
       user <- if (userOpt.isDefined) right(userOpt.get)
-      else left[R, Error, User](NotFound(s"Unable to find user for uid $uidUser"))
+      else left[R, UsersError, User](UserNotFound(s"Unable to find user for uid $uidUser"))
     } yield user
   }
 
-  override def get[R: _tDBOut : _errorEither](uidUsers: Seq[UUID]): Eff[R, Seq[User]] = {
+  override def get[R: _tDBOut : _usersErrorEither](uidUsers: Seq[UUID]): Eff[R, Seq[User]] = {
     usersDal.find(uidUsers).execute
   }
 

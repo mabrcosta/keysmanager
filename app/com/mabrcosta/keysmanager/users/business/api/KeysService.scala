@@ -14,6 +14,6 @@ trait KeysService[TDBIO[_], TDBOut[_]] extends BaseService[TDBIO, TDBOut] {
 
   def add[R : _tDBOut : _ownerReader](keyValue: String): Eff[R, Key]
 
-  def delete[R : _tDBOut : _ownerReader : _errorEither](uid: UUID): Eff[R, Boolean]
+  def delete[R : _tDBOut : _ownerReader : _keysErrorEither](uid: UUID): Eff[R, Boolean]
 
 }

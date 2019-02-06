@@ -2,9 +2,8 @@ package com.mabrcosta.keysmanager.users.business.func
 
 import java.util.UUID
 
-import com.mabrcosta.keysmanager.core.business.api.{Error, NotFound}
 import com.mabrcosta.keysmanager.core.persistence.util.EffectsDatabaseExecutor
-import com.mabrcosta.keysmanager.users.business.api.{UsersGroupsService, _errorEither}
+import com.mabrcosta.keysmanager.users.business.api.{UsersGroupNotFound, UsersGroupsError, UsersGroupsService, _usersGroupsErrorEither}
 import com.mabrcosta.keysmanager.users.data.{UsersGroup, UsersGroupUser}
 import com.mabrcosta.keysmanager.users.persistence.api.{UsersGroupsDal, UsersGroupsUsersDal}
 import javax.inject.Inject
@@ -22,11 +21,12 @@ class UsersGroupsServiceImpl[TDBIO[_], TDBOut[_]] @Inject()(
 
   import effectsDatabaseExecutor._
 
-  override def get[R: _tDBOut: _errorEither](uidUsersGroup: UUID): Eff[R, UsersGroup] = {
+  override def get[R: _tDBOut: _usersGroupsErrorEither](uidUsersGroup: UUID): Eff[R, UsersGroup] = {
     for {
       usersGroupOpt <- usersGroupsDal.find(uidUsersGroup).execute
       usersGroup <- if (usersGroupOpt.isDefined) right(usersGroupOpt.get)
-      else left[R, Error, UsersGroup](NotFound(s"Unable to find users group for uid $uidUsersGroup"))
+      else
+        left[R, UsersGroupsError, UsersGroup](UsersGroupNotFound(s"Unable to find users group for uid $uidUsersGroup"))
     } yield usersGroup
   }
 

@@ -3,14 +3,23 @@ package com.mabrcosta.keysmanager.access.business.func
 import java.time.Instant
 import java.util.UUID
 
-import com.mabrcosta.keysmanager.access.business.api.AccessService
+import com.mabrcosta.keysmanager.access.business.api.{
+  AccessError,
+  AccessProviderNotFound,
+  AccessService,
+  _accessErrorEither
+}
 import com.mabrcosta.keysmanager.access.data._
 import com.mabrcosta.keysmanager.access.persistence.api.AccessProvidersDal
-import com.mabrcosta.keysmanager.core.business.api.{Error, NotFound}
 import com.mabrcosta.keysmanager.core.persistence.util.EffectsDatabaseExecutor
-import com.mabrcosta.keysmanager.machines.business.api.{MachinesGroupsService, MachinesService}
+import com.mabrcosta.keysmanager.machines.business.api.{
+  MachinesGroupsService,
+  MachinesService,
+  _machinesErrorEither,
+  _machinesGroupsErrorEither
+}
 import com.mabrcosta.keysmanager.machines.data.{Machine, MachinesGroup}
-import com.mabrcosta.keysmanager.users.business.api.{KeysService, UsersGroupsService, UsersService, _errorEither}
+import com.mabrcosta.keysmanager.users.business.api._
 import com.mabrcosta.keysmanager.users.data.{Key, User, UsersGroup}
 import javax.inject.Inject
 import org.atnos.eff.Eff
@@ -31,9 +40,7 @@ class AccessServiceImpl[TDBIO[_], TDBOut[_]] @Inject()(
 
   import effectsDatabaseExecutor._
 
-  //TODO: Search method
-
-  override def getAuthorizedKeys[R: _tDBOut: _errorEither](hostname: String): Eff[R, Seq[Key]] = {
+  override def getAuthorizedKeys[R: _tDBOut: _machinesErrorEither](hostname: String): Eff[R, Seq[Key]] = {
     for {
       machine <- machinesService.getForHostname(hostname)
       groups <- machinesGroupService.getWithMachine(machine.id.get)
@@ -43,8 +50,8 @@ class AccessServiceImpl[TDBIO[_], TDBOut[_]] @Inject()(
     } yield keys
   }
 
-  private[this] def getMachineProvidersAuthorizedKeys[R: _tDBOut: _errorEither](uidMachineProviders: Seq[UUID],
-                                                                                at: Instant): Eff[R, Seq[Key]] = {
+  private[this] def getMachineProvidersAuthorizedKeys[R: _tDBOut](uidMachineProviders: Seq[UUID],
+                                                                  at: Instant): Eff[R, Seq[Key]] = {
     for {
       accessProviders <- accessProvidersDal.findForMachinesProviders(uidMachineProviders, at).execute
       usersProviders = accessProviders.map(_.uidUserAccessProvider)
@@ -55,16 +62,19 @@ class AccessServiceImpl[TDBIO[_], TDBOut[_]] @Inject()(
     } yield keys
   }
 
-  private def get[R: _tDBOut: _errorEither](uidProvider: UUID): Eff[R, AccessProvider] = {
+  private def get[R: _tDBOut: _accessErrorEither](uidProvider: UUID): Eff[R, AccessProvider] = {
     for {
       providerOpt <- accessProvidersDal.find(uidProvider).execute
       provider <- if (providerOpt.isDefined) right(providerOpt.get)
-      else left[R, Error, AccessProvider](NotFound(s"Unable to find access provider for uid $uidProvider"))
+      else
+        left[R, AccessError, AccessProvider](
+          AccessProviderNotFound(s"Unable to find access provider for uid $uidProvider"))
     } yield provider
   }
 
   //TODO: Add creator
-  override def add[R: _tDBOut: _errorEither](
+  override def add[
+      R: _tDBOut: _machinesErrorEither: _machinesGroupsErrorEither: _usersErrorEither: _usersGroupsErrorEither](
       accessProviderData: AccessProviderCreationData): Eff[R, AccessProviderData] = {
     for {
       machinesProvider <- getMachinesAccessProvider[R](accessProviderData.machineAccess)
@@ -81,7 +91,7 @@ class AccessServiceImpl[TDBIO[_], TDBOut[_]] @Inject()(
     } yield AccessProviderData(result, usersProvider, machinesProvider)
   }
 
-  private def getMachinesAccessProvider[R: _tDBOut: _errorEither](
+  private def getMachinesAccessProvider[R: _tDBOut: _machinesErrorEither: _machinesGroupsErrorEither](
       machineAccess: Either[MachinesGroupAccessCreationData, MachineAccessCreationData])
     : Eff[R, Either[MachinesGroup, Machine]] = {
     machineAccess match {
@@ -90,7 +100,7 @@ class AccessServiceImpl[TDBIO[_], TDBOut[_]] @Inject()(
     }
   }
 
-  private def getUsersAccessProvider[R: _tDBOut: _errorEither](
+  private def getUsersAccessProvider[R: _tDBOut: _usersErrorEither: _usersGroupsErrorEither](
       userAccess: Either[UsersGroupAccessCreationData, UserAccessCreationData]): Eff[R, Either[UsersGroup, User]] = {
     userAccess match {
       case Right(user)      => usersService.get[R](user.uid).map(Right(_))
@@ -98,7 +108,7 @@ class AccessServiceImpl[TDBIO[_], TDBOut[_]] @Inject()(
     }
   }
 
-  override def delete[R: _tDBOut: _errorEither](uidProvider: UUID): Eff[R, Boolean] = {
+  override def delete[R: _tDBOut: _accessErrorEither](uidProvider: UUID): Eff[R, Boolean] = {
     for {
       provider <- get[R](uidProvider)
       _ <- accessProvidersDal.delete(provider).execute

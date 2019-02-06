@@ -8,7 +8,7 @@ import org.atnos.eff.Eff
 
 trait UsersGroupsService[TDBIO[_], TDBOut[_]] extends BaseService[TDBIO, TDBOut] {
 
-  def get[R: _tDBOut: _errorEither](uidUsersGroup: UUID): Eff[R, UsersGroup]
+  def get[R: _tDBOut: _usersGroupsErrorEither](uidUsersGroup: UUID): Eff[R, UsersGroup]
 
   def getWithProviders[R : _tDBOut](uidUsersProviders: Seq[UUID]): Eff[R, Seq[UsersGroup]]
 

@@ -2,9 +2,8 @@ package com.mabrcosta.keysmanager.users.business.func
 
 import java.util.UUID
 
-import com.mabrcosta.keysmanager.core.business.api.{Error, NotFound}
 import com.mabrcosta.keysmanager.core.persistence.util.EffectsDatabaseExecutor
-import com.mabrcosta.keysmanager.users.business.api.{KeysService, _errorEither, _ownerReader}
+import com.mabrcosta.keysmanager.users.business.api._
 import com.mabrcosta.keysmanager.users.data.Key
 import com.mabrcosta.keysmanager.users.persistence.api.KeysDal
 import javax.inject.Inject
@@ -15,9 +14,9 @@ import org.atnos.eff.ReaderEffect._
 import scala.concurrent.ExecutionContext
 
 class KeysServiceImpl[TDBIO[_], TDBOut[_]] @Inject()(
-      private val keysDal: KeysDal[TDBIO],
-      private val effectsDatabaseExecutor: EffectsDatabaseExecutor[TDBIO, TDBOut],
-      implicit val executionContext: ExecutionContext)
+    private val keysDal: KeysDal[TDBIO],
+    private val effectsDatabaseExecutor: EffectsDatabaseExecutor[TDBIO, TDBOut],
+    implicit val executionContext: ExecutionContext)
     extends KeysService[TDBIO, TDBOut] {
 
   import effectsDatabaseExecutor._
@@ -41,12 +40,12 @@ class KeysServiceImpl[TDBIO[_], TDBOut[_]] @Inject()(
     } yield res
   }
 
-  override def delete[R: _tDBOut: _ownerReader: _errorEither](uid: UUID): Eff[R, Boolean] = {
+  override def delete[R: _tDBOut: _ownerReader: _keysErrorEither](uid: UUID): Eff[R, Boolean] = {
     for {
       uidOwner <- ask
       keyOpt <- keysDal.findForOwner(uid, uidOwner).execute
       key <- if (keyOpt.isDefined) right(keyOpt.get)
-      else left[R, Error, Key](NotFound(s"Unable to find key for uid $uid"))
+      else left[R, KeysError, Key](KeyNotFound(s"Unable to find key for uid $uid"))
       _ <- keysDal.delete(key).execute
     } yield true
   }

@@ -3,9 +3,9 @@ package com.mabrcosta.keysmanager.machines.conf
 import com.google.inject.{Provides, TypeLiteral}
 import com.mabrcosta.keysmanager.core.persistence.util.EffDbExecutorId
 import com.mabrcosta.keysmanager.machines.business.api.{MachinesGroupsService, MachinesService}
-import com.mabrcosta.keysmanager.machines.business.{MachinesGroupsServiceImpl, MachinesServiceImpl}
+import com.mabrcosta.keysmanager.machines.business.func.{MachinesGroupsServiceImpl, MachinesServiceImpl}
 import com.mabrcosta.keysmanager.machines.persistence.api.{MachinesDal, MachinesGroupMachinesDal, MachinesGroupsDal}
-import com.mabrcosta.keysmanager.machines.persistence.{MachinesGroupMachinesRepository, MachinesGroupsRepository, MachinesRepository}
+import com.mabrcosta.keysmanager.machines.persistence.func.{MachinesGroupMachinesRepository, MachinesGroupsRepository, MachinesRepository}
 import javax.inject.Singleton
 import net.codingwell.scalaguice.ScalaModule
 import slick.dbio.DBIO
