@@ -23,7 +23,7 @@ class KeysRepository @Inject()(private val jdbcProfile: JdbcProfile)
 
   class Keys(tag: Tag) extends BaseRepositoryTable(tag, Some(PersistenceSchema.schema), "keys") {
     def value = column[String]("value", Unique)
-    def uidOwnerSubject = column[UUID]("uid_owner_user")
+    def uidOwnerSubject = column[UUID]("owner_user_id")
 
     def * =
       (id.?, value, uidOwnerSubject, uidCreatorUser, uidLastModifierUser, creationInstant,

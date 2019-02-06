@@ -17,13 +17,13 @@ class AccessProvidersRepository @Inject()(private val jdbcProfile: JdbcProfile)
 
   import profile.api._
 
-  type TableType = Users
-  val tableQuery = TableQuery[Users]
+  type TableType = AccessProviders
+  val tableQuery = TableQuery[AccessProviders]
   val pkType = implicitly[BaseTypedType[UUID]]
 
-  class Users(tag: Tag) extends BaseRepositoryTable(tag, Some(PersistenceSchema.schema), "users") {
-    def uidUserAccessProvider = column[UUID]("uid_user_access_provider")
-    def uidMachineAccessProvider = column[UUID]("uid_machine_access_provider")
+  class AccessProviders(tag: Tag) extends BaseRepositoryTable(tag, Some(PersistenceSchema.schema), "access_providers") {
+    def uidUserAccessProvider = column[UUID]("user_access_provider_id")
+    def uidMachineAccessProvider = column[UUID]("machine_access_provider_id")
     def startInstant = column[Instant]("start_instant")
     def endInstant = column[Instant]("end_instant")
 

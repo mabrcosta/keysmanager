@@ -22,8 +22,8 @@ class MachinesGroupMachinesRepository @Inject()(private val jdbcProfile: JdbcPro
 
   class MachinesGroupMachines(tag: Tag)
       extends BaseRepositoryTable(tag, Some(PersistenceSchema.schema), "machines_groups_machines") {
-    def uidMachine = column[UUID]("uid_machine")
-    def uidMachinesGroup = column[UUID]("uid_machines_group")
+    def uidMachine = column[UUID]("machine_id")
+    def uidMachinesGroup = column[UUID]("machines_group_id")
 
     def * = (id.?, uidMachine, uidMachinesGroup, uidCreatorUser, uidLastModifierUser, creationInstant,
       updateInstant) <> (MachinesGroupMachine.tupled, MachinesGroupMachine.unapply)

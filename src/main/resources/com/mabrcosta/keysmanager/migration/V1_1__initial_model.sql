@@ -1,8 +1,82 @@
-create table "PUBLIC"."keys" (
-    "uid" UUID NOT NULL PRIMARY KEY,
-    "value" VARCHAR NOT NULL,
-    "uid_owner_user" UUID NOT NULL,
-    "uid_creator_user" UUID,
-    "uid_last_modifier_user" UUID,
-    "creation_instant" TIMESTAMP NOT NULL,
-    "update_instant" TIMESTAMP NOT NULL);
+CREATE TABLE "PUBLIC"."users" (
+  "id" UUID NOT NULL PRIMARY KEY,
+  "first_name" varchar NOT NULL,
+  "last_name" varchar NOT NULL,
+  "user_access_provider_id" UUID NOT NULL,
+  "creator_subject_id" UUID,
+  "last_modifier_subject_id" UUID,
+  "creation_instant" timestamp NOT NULL,
+  "update_instant" timestamp NOT NULL
+);
+CREATE TABLE "PUBLIC"."users_groups" (
+  "id" UUID NOT NULL PRIMARY KEY,
+  "name" varchar NOT NULL,
+  "user_access_provider_id" UUID NOT NULL,
+  "creator_subject_id" UUID,
+  "last_modifier_subject_id" UUID,
+  "creation_instant" timestamp NOT NULL,
+  "update_instant" timestamp NOT NULL
+);
+CREATE TABLE "PUBLIC"."users_groups_user" (
+  "id" UUID NOT NULL PRIMARY KEY,
+  "user_id" UUID NOT NULL,
+  "users_group_id" UUID NOT NULL,
+  "creator_subject_id" UUID,
+  "last_modifier_subject_id" UUID,
+  "creation_instant" timestamp NOT NULL,
+  "update_instant" timestamp NOT NULL
+);
+CREATE TABLE "PUBLIC"."users_access_providers" (
+  "id" UUID NOT NULL PRIMARY KEY
+);
+CREATE TABLE "PUBLIC"."keys" (
+  "id" UUID NOT NULL PRIMARY KEY,
+  "value" varchar NOT NULL UNIQUE,
+  "owner_user_id" UUID NOT NULL,
+  "creator_subject_id" UUID,
+  "last_modifier_subject_id" UUID,
+  "creation_instant" timestamp NOT NULL,
+  "update_instant" timestamp NOT NULL
+);
+CREATE TABLE "PUBLIC"."machines" (
+  "id" UUID NOT NULL PRIMARY KEY,
+  "name" varchar NOT NULL,
+  "hostname" varchar NOT NULL,
+  "machine_access_provider_id" UUID NOT NULL,
+  "creator_subject_id" UUID,
+  "last_modifier_subject_id" UUID,
+  "creation_instant" timestamp NOT NULL,
+  "update_instant" timestamp NOT NULL
+);
+CREATE TABLE "PUBLIC"."machines_groups" (
+  "id" UUID NOT NULL PRIMARY KEY,
+  "name" varchar NOT NULL,
+  "machine_access_provider_id" UUID NOT NULL,
+  "creator_subject_id" UUID,
+  "last_modifier_subject_id" UUID,
+  "creation_instant" timestamp NOT NULL,
+  "update_instant" timestamp NOT NULL
+);
+CREATE TABLE "PUBLIC"."machines_groups_machines" (
+  "id" UUID NOT NULL PRIMARY KEY,
+  "machine_id" UUID NOT NULL,
+  "machines_group_id" UUID NOT NULL,
+  "creator_subject_id" UUID,
+  "last_modifier_subject_id" UUID,
+  "creation_instant" timestamp NOT NULL,
+  "update_instant" timestamp NOT NULL
+);
+CREATE TABLE "PUBLIC"."machines_access_providers" (
+  "id" UUID NOT NULL PRIMARY KEY
+);
+CREATE TABLE "PUBLIC"."access_providers" (
+  "id" UUID NOT NULL PRIMARY KEY,
+  "user_access_provider_id" UUID NOT NULL,
+  "machine_access_provider_id" UUID NOT NULL,
+  "start_instant" timestamp NOT NULL,
+  "end_instant" timestamp NOT NULL,
+  "creator_subject_id" UUID,
+  "last_modifier_subject_id" UUID,
+  "creation_instant" timestamp NOT NULL,
+  "update_instant" timestamp NOT NULL
+)

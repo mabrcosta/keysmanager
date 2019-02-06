@@ -14,7 +14,7 @@ abstract class SimpleDBIORepository[TEntity <: Entity[TEntity, TKey], TKey](val 
   abstract class SimpleRepositoryTable(tag: Tag, schema: Option[String], name: String)
       extends Table[TEntity](tag, schema, name)
       with Keyed[TKey] {
-    def id = column[TKey]("uid", O.PrimaryKey)
+    def id = column[TKey]("id", O.PrimaryKey)
   }
 
   private lazy val existsCompiled = Compiled((id: Rep[TKey]) => tableQuery.filter(_.id === id).exists)

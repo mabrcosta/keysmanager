@@ -23,7 +23,7 @@ class MachinesRepository @Inject()(private val jdbcProfile: JdbcProfile)
   class Machines(tag: Tag) extends BaseRepositoryTable(tag, Some(PersistenceSchema.schema), "machines") {
     def name = column[String]("name")
     def hostname = column[String]("hostname")
-    def uidMachineAccessProvider = column[UUID]("uid_machine_access_provider")
+    def uidMachineAccessProvider = column[UUID]("machine_access_provider_id")
 
     def * =
       (id.?,

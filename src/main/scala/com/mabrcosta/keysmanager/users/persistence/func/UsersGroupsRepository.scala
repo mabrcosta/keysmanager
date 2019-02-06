@@ -22,7 +22,7 @@ class UsersGroupsRepository @Inject()(private val jdbcProfile: JdbcProfile)
 
   class UsersGroups(tag: Tag) extends BaseRepositoryTable(tag, Some(PersistenceSchema.schema), "users_groups") {
     def name = column[String]("name")
-    def uidUserAccessProvider = column[UUID]("uid_user_access_provider")
+    def uidUserAccessProvider = column[UUID]("user_access_provider_id")
 
     def * =
       (id.?, name, uidUserAccessProvider, uidCreatorUser, uidLastModifierUser, creationInstant,

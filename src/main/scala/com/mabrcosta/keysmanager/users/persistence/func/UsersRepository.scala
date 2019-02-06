@@ -23,7 +23,7 @@ class UsersRepository @Inject()(private val jdbcProfile: JdbcProfile)
   class Users(tag: Tag) extends BaseRepositoryTable(tag, Some(PersistenceSchema.schema), "users") {
     def firstName = column[String]("first_name")
     def lastName = column[String]("last_name")
-    def uidUserAccessProvider = column[UUID]("uid_user_access_provider")
+    def uidUserAccessProvider = column[UUID]("user_access_provider_id")
 
     def * =
       (id.?, firstName, lastName, uidUserAccessProvider, uidCreatorUser, uidLastModifierUser, creationInstant,

@@ -22,8 +22,8 @@ class UsersGroupsUsersRepository @Inject()(private val jdbcProfile: JdbcProfile)
 
   class UsersGroupUsers(tag: Tag)
       extends BaseRepositoryTable(tag, Some(PersistenceSchema.schema), "users_groups_user") {
-    def uidUser = column[UUID]("uid_user")
-    def uidUsersGroup = column[UUID]("uid_users_group")
+    def uidUser = column[UUID]("user_id")
+    def uidUsersGroup = column[UUID]("users_group_id")
 
     def * = (id.?, uidUser, uidUsersGroup, uidCreatorUser, uidLastModifierUser, creationInstant,
         updateInstant) <> (UsersGroupUser.tupled, UsersGroupUser.unapply)
