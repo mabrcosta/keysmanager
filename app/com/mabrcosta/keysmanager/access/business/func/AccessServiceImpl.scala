@@ -33,8 +33,18 @@ class AccessServiceImpl[TDBIO[_], TDBOut[_]] @Inject()(
 
   //TODO: Search method
 
-  override def getAuthorizedKeys[R: _tDBOut: _errorEither](uidMachineProviders: Seq[UUID],
-                                                           at: Instant): Eff[R, Seq[Key]] = {
+  override def getAuthorizedKeys[R: _tDBOut: _errorEither](hostname: String): Eff[R, Seq[Key]] = {
+    for {
+      machine <- machinesService.getForHostname(hostname)
+      groups <- machinesGroupService.getWithMachine(machine.id.get)
+      keys <- getMachineProvidersAuthorizedKeys(
+        groups.map(_.uidMachineAccessProvider) :+ machine.uidMachineAccessProvider,
+        Instant.now())
+    } yield keys
+  }
+
+  private[this] def getMachineProvidersAuthorizedKeys[R: _tDBOut: _errorEither](uidMachineProviders: Seq[UUID],
+                                                                                at: Instant): Eff[R, Seq[Key]] = {
     for {
       accessProviders <- accessProvidersDal.findForMachinesProviders(uidMachineProviders, at).execute
       usersProviders = accessProviders.map(_.uidUserAccessProvider)

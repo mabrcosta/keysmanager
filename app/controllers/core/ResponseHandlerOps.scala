@@ -7,6 +7,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 object ResponseHandlerOps extends Results {
 
+  private[this] lazy val logger: Logger = Logger(this.getClass)
+
   implicit class FutureResponseHandler[T](future: Future[T]) {
     def mapResponse(response: T => Result)(implicit ec: ExecutionContext): Future[Result] =
       handlerRecoverFuture(future.map(response))
@@ -17,7 +19,7 @@ object ResponseHandlerOps extends Results {
     private[this] def handlerRecoverFuture(future: Future[Result])(implicit ec: ExecutionContext): Future[Result] =
       future.recover({
         case ex: Throwable => {
-          Logger.error(ex.getMessage, ex)
+          logger.error(ex.getMessage, ex)
           InternalServerError(ex.getMessage)
         }
       })

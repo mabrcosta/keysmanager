@@ -1,7 +1,6 @@
 package com.mabrcosta.keysmanager.machines.conf
 
 import com.google.inject.{Provides, TypeLiteral}
-import com.mabrcosta.keysmanager.access.business.api.AccessService
 import com.mabrcosta.keysmanager.core.persistence.util.EffDbExecutorId
 import com.mabrcosta.keysmanager.machines.business.api.{MachinesGroupsService, MachinesService}
 import com.mabrcosta.keysmanager.machines.business.{MachinesGroupsServiceImpl, MachinesServiceImpl}
@@ -25,14 +24,12 @@ class MachinesModule extends ScalaModule {
   @Singleton
   def providesDBIOMachinesService(machinesDal: MachinesDal[DBIO],
                                   machinesGroupService: MachinesGroupsService[DBIO, DBIO],
-                                  accessService: AccessService[DBIO, DBIO],
                                   effectsDatabaseExecutor: EffDbExecutorId[DBIO],
                                   executionContext: ExecutionContext): MachinesService[DBIO, DBIO] = {
 
     new MachinesServiceImpl[DBIO, DBIO](
       machinesDal,
       machinesGroupService,
-      accessService,
       effectsDatabaseExecutor,
       executionContext
     )
