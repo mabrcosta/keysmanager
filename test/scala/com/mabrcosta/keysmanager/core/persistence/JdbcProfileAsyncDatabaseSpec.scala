@@ -1,4 +1,4 @@
-package com.mabrcosta.keysmanager.users.core.persistence
+package scala.com.mabrcosta.keysmanager.core.persistence
 
 import java.sql.SQLException
 import java.util.UUID

@@ -1,23 +1,17 @@
-package com.mabrcosta.keysmanager.users.key.business
+package scala.com.mabrcosta.keysmanager.core
 
 import java.util.UUID
 
-import com.mabrcosta.keysmanager.core.business.api.Error
-import com.mabrcosta.keysmanager.core.persistence.util._
-import com.mabrcosta.keysmanager.users.business.api.Stack
-import com.mabrcosta.keysmanager.users.business.api
-import controllers.machines.interpreters.MachinesStackInterpreter
-import org.atnos.eff.concurrent.Scheduler
-import org.atnos.eff.{Eff, ExecutorServices}
+import com.mabrcosta.keysmanager.core.business.api.BaseError
+import org.atnos.eff.Eff
 import org.mockito.Mockito
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{Assertion, AsyncWordSpec}
 import slick.dbio.{DBIO, DBIOAction}
-import slick.jdbc.JdbcBackend
 
 import scala.concurrent.Future
 
-trait AbstractServiceSpec extends AsyncWordSpec with MockitoSugar {
+trait AbstractServiceSpec[Stack] extends AsyncWordSpec with MockitoSugar {
 
   def mockDbInteraction[T](methodCall: DBIO[T], returnValue: T): Unit = {
     val execDbAction = Future.successful(returnValue)
@@ -36,7 +30,7 @@ trait AbstractServiceSpec extends AsyncWordSpec with MockitoSugar {
 
   def assertLeft[T](effect: Eff[Stack, T],
                     uidOwner: UUID,
-                    errorAssertion: Error => Assertion): Future[Assertion] = {
+                    errorAssertion: BaseError => Assertion): Future[Assertion] = {
 
     assertFutureSuccess[T](effect, uidOwner, {
       case Left(error)  => errorAssertion(error)
@@ -46,7 +40,7 @@ trait AbstractServiceSpec extends AsyncWordSpec with MockitoSugar {
 
   def assertFutureSuccess[T](effect: Eff[Stack, T],
                              uidOwner: UUID,
-                             valueAssertion: Either[Error, T] => Assertion): Future[Assertion] = {
+                             valueAssertion: Either[BaseError, T] => Assertion): Future[Assertion] = {
     runStack(effect, uidOwner).map(valueAssertion).recover {
       case ex: Throwable => {
         ex.printStackTrace()
@@ -55,15 +49,17 @@ trait AbstractServiceSpec extends AsyncWordSpec with MockitoSugar {
     }
   }
 
-  def runStack[T](effect: Eff[Stack, T], uidOwner: UUID): Future[Either[Error, T]] = {
-    val db = JdbcBackend.Database.forURL("jdbc:h2:mem:test")
-    val backend = new WithSessionJdbcBackend(db)
-    val asyncDatabase = new JdbcProfileAsyncDatabase(db, backend)
-    val scheduler: Scheduler = ExecutorServices.schedulerFromGlobalExecutionContext
+  def runStack[T](effect: Eff[Stack, T], uidOwner: UUID): Future[Either[BaseError, T]]
 
-    val interpreter = new MachinesStackInterpreter(asyncDatabase, executionContext, scheduler)
-
-    interpreter.run(effect, uidOwner)
-  }
+//  def runStack[T](effect: Eff[Stack, T], uidOwner: UUID): Future[Either[BaseError, T]] = {
+//    val db = JdbcBackend.Database.forURL("jdbc:h2:mem:test")
+//    val backend = new WithSessionJdbcBackend(db)
+//    val asyncDatabase = new JdbcProfileAsyncDatabase(db, backend)
+//    val scheduler: Scheduler = ExecutorServices.schedulerFromGlobalExecutionContext
+//
+//    val interpreter = new MachinesStackInterpreter(asyncDatabase, executionContext, scheduler)
+//
+//    interpreter.run(effect, uidOwner)
+//  }
 
 }

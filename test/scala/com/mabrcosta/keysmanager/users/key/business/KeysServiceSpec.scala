@@ -2,20 +2,31 @@ package com.mabrcosta.keysmanager.users.key.business
 
 import java.util.UUID
 
-import com.mabrcosta.keysmanager.core.business.api.NotFound
-import com.mabrcosta.keysmanager.core.persistence.util.EffDbExecutorId
+import com.mabrcosta.keysmanager.core.business.api.BaseError
+import com.mabrcosta.keysmanager.core.persistence.util.{EffDbExecutorId, JdbcProfileAsyncDatabase, WithSessionJdbcBackend}
 import com.mabrcosta.keysmanager.users.business.api._
 import com.mabrcosta.keysmanager.users.business.func.KeysServiceImpl
 import com.mabrcosta.keysmanager.users.data.Key
+import com.mabrcosta.keysmanager.users.key.business.KeysServiceSpec.KeysStack
 import com.mabrcosta.keysmanager.users.persistence.api.KeysDal
 import org.atnos.eff.MemberIn._
+import org.atnos.eff.concurrent.Scheduler
+import org.atnos.eff.syntax.all._
+import org.atnos.eff.{Eff, FutureInterpretation, Fx, TimedFuture, _}
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.{ArgumentMatcher, ArgumentMatchers, Mockito}
 import slick.dbio.{DBIO, DBIOAction}
+import slick.jdbc.JdbcBackend
+import com.mabrcosta.keysmanager.core.persistence.util.DBIOEffect._
 
+import scala.com.mabrcosta.keysmanager.core.AbstractServiceSpec
 import scala.concurrent.{ExecutionContext, Future}
 
-class KeysServiceSpec extends AbstractServiceSpec {
+object KeysServiceSpec {
+  type KeysStack = Fx.fx4[OwnerReader[?], KeysErrorEither[?], DBIO, TimedFuture]
+}
+
+class KeysServiceSpec extends AbstractServiceSpec[KeysStack] {
 
   val keysDal: KeysDal[DBIO] = mock[KeysDal[DBIO]]
   val effectsExecutor = new EffDbExecutorId[DBIO]
@@ -27,7 +38,7 @@ class KeysServiceSpec extends AbstractServiceSpec {
     "the owner have no keys" should {
       "return an empty sequence" in {
         mockDbInteraction(keysDal.findForOwner(uidOwner), Seq[Key]())
-        assertRight[Seq[Key]](keyService.getForOwner[Stack],
+        assertRight[Seq[Key]](keyService.getForOwner[KeysStack],
                               uidOwner,
                               result => if (result.isEmpty) succeed else fail(result.toString()))
       }
@@ -37,7 +48,7 @@ class KeysServiceSpec extends AbstractServiceSpec {
         val values =
           Seq(Key(value = "key1", uidOwnerSubject = uidOwner), Key(value = "key2", uidOwnerSubject = uidOwner))
         mockDbInteraction(keysDal.findForOwner(uidOwner), values)
-        assertRight[Seq[Key]](keyService.getForOwner[Stack],
+        assertRight[Seq[Key]](keyService.getForOwner[KeysStack],
                               uidOwner,
                               result => if (result.size == 2 && result == values) succeed else fail(result.toString()))
       }
@@ -59,7 +70,7 @@ class KeysServiceSpec extends AbstractServiceSpec {
           })
 
         assertRight[Key](
-          keyService.add[Stack](keyValue),
+          keyService.add[KeysStack](keyValue),
           uidOwner,
           result => if (keyValueArgumentMatcher(keyValue).matches(result)) succeed else fail(result.toString))
       }
@@ -68,12 +79,12 @@ class KeysServiceSpec extends AbstractServiceSpec {
 
   "Deleting keys" when {
     "deleting a non-existent key for owner and uid" should {
-      "return a NotFound error" in {
+      "return a KeyNotFound error" in {
         val uidKey = UUID.randomUUID()
         val response: Option[Key] = None
         mockDbInteraction(keysDal.findForOwner(uidKey, uidOwner), response)
-        val res = assertLeft[Boolean](keyService.delete[Stack](uidKey), uidOwner, {
-          case NotFound(_) => succeed
+        val res = assertLeft[Boolean](keyService.delete[KeysStack](uidKey), uidOwner, {
+          case KeyNotFound(_) => succeed
           case res         => fail(res.toString)
         })
         Mockito.verify(keysDal).findForOwner(uidKey, uidOwner)
@@ -87,12 +98,25 @@ class KeysServiceSpec extends AbstractServiceSpec {
         val response = Key(id = Some(uidKey), value = "key_value", uidOwnerSubject = uidOwner)
         mockDbInteraction(keysDal.findForOwner(uidKey, uidOwner), Some(response))
         mockDbInteraction(keysDal.delete(response), response)
-        assertRight[Boolean](keyService.delete[Stack](uidKey), uidOwner, result => if (result) succeed else fail)
+        assertRight[Boolean](keyService.delete[KeysStack](uidKey), uidOwner, result => if (result) succeed else fail)
       }
     }
   }
 
   def keyValueArgumentMatcher(keyValue: String): ArgumentMatcher[Key] =
     (argument: Key) => if (keyValue == argument.value) true else false
+
+  def runStack[T](effect: Eff[KeysStack, T], uidOwner: UUID): Future[Either[BaseError, T]] = {
+    val db = JdbcBackend.Database.forURL("jdbc:h2:mem:test")
+    val backend = new WithSessionJdbcBackend(db)
+    val asyncDatabase = new JdbcProfileAsyncDatabase(db, backend)
+    implicit val scheduler: Scheduler = ExecutorServices.schedulerFromGlobalExecutionContext
+
+    import controllers.core.StackInterpreterIOValidatorOps._
+
+    asyncDatabase.withTransaction { implicit sessionDatabase =>
+      FutureInterpretation.runAsync(effect.runDBIO.runReader(uidOwner).runEither)
+    }(_.validateRight(_.valid))
+  }
 
 }
