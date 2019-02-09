@@ -1,8 +1,8 @@
 package scala.com.mabrcosta.keysmanager.core
 
-import java.util.UUID
-
 import com.mabrcosta.keysmanager.core.business.api.BaseError
+import com.mabrcosta.keysmanager.core.data.EntityId
+import com.mabrcosta.keysmanager.users.data.User
 import org.atnos.eff.Eff
 import org.mockito.Mockito
 import org.scalatest.mockito.MockitoSugar
@@ -20,28 +20,30 @@ trait AbstractServiceSpec[Stack] extends AsyncWordSpec with MockitoSugar {
     Mockito.when(methodCall).thenReturn(dbAction)
   }
 
-  def assertRight[T](effect: Eff[Stack, T], uidOwner: UUID, valueAssertion: T => Assertion): Future[Assertion] = {
+  def assertRight[T](effect: Eff[Stack, T],
+                     ownerUserId: EntityId[User],
+                     valueAssertion: T => Assertion): Future[Assertion] = {
 
-    assertFutureSuccess[T](effect, uidOwner, {
+    assertFutureSuccess[T](effect, ownerUserId, {
       case Left(error)  => fail(s"Failed either assertion with left error: ${error.message}")
       case Right(value) => valueAssertion(value)
     })
   }
 
   def assertLeft[T](effect: Eff[Stack, T],
-                    uidOwner: UUID,
+                    ownerUserId: EntityId[User],
                     errorAssertion: BaseError => Assertion): Future[Assertion] = {
 
-    assertFutureSuccess[T](effect, uidOwner, {
+    assertFutureSuccess[T](effect, ownerUserId, {
       case Left(error)  => errorAssertion(error)
       case Right(value) => fail(s"Failed either assertion with right value: $value")
     })
   }
 
   def assertFutureSuccess[T](effect: Eff[Stack, T],
-                             uidOwner: UUID,
+                             ownerUserId: EntityId[User],
                              valueAssertion: Either[BaseError, T] => Assertion): Future[Assertion] = {
-    runStack(effect, uidOwner).map(valueAssertion).recover {
+    runStack(effect, ownerUserId).map(valueAssertion).recover {
       case ex: Throwable => {
         ex.printStackTrace()
         fail(s"Failed future assertion with exception ${ex.getMessage}")
@@ -49,17 +51,6 @@ trait AbstractServiceSpec[Stack] extends AsyncWordSpec with MockitoSugar {
     }
   }
 
-  def runStack[T](effect: Eff[Stack, T], uidOwner: UUID): Future[Either[BaseError, T]]
-
-//  def runStack[T](effect: Eff[Stack, T], uidOwner: UUID): Future[Either[BaseError, T]] = {
-//    val db = JdbcBackend.Database.forURL("jdbc:h2:mem:test")
-//    val backend = new WithSessionJdbcBackend(db)
-//    val asyncDatabase = new JdbcProfileAsyncDatabase(db, backend)
-//    val scheduler: Scheduler = ExecutorServices.schedulerFromGlobalExecutionContext
-//
-//    val interpreter = new MachinesStackInterpreter(asyncDatabase, executionContext, scheduler)
-//
-//    interpreter.run(effect, uidOwner)
-//  }
+  def runStack[T](effect: Eff[Stack, T], ownerUserId: EntityId[User]): Future[Either[BaseError, T]]
 
 }

@@ -1,10 +1,9 @@
 package com.mabrcosta.keysmanager.machines.business.func
 
-import java.util.UUID
-
+import com.mabrcosta.keysmanager.core.data.EntityId
 import com.mabrcosta.keysmanager.core.persistence.util.EffectsDatabaseExecutor
 import com.mabrcosta.keysmanager.machines.business.api.{MachinesGroupNotFound, MachinesGroupsError, MachinesGroupsService, _machinesGroupsErrorEither}
-import com.mabrcosta.keysmanager.machines.data.MachinesGroup
+import com.mabrcosta.keysmanager.machines.data.{Machine, MachinesGroup}
 import com.mabrcosta.keysmanager.machines.persistence.api.{MachinesGroupMachinesDal, MachinesGroupsDal}
 import javax.inject.Inject
 import org.atnos.eff.Eff
@@ -21,21 +20,22 @@ class MachinesGroupsServiceImpl[TDBIO[_], TDBOut[_]] @Inject()(
 
   import effectsDatabaseExecutor._
 
-  override def getWithMachine[R: _tDBOut](uidMachine: UUID): Eff[R, Seq[MachinesGroup]] = {
+  override def get[R: _tDBOut: _machinesGroupsErrorEither](
+      machinesGroupId: EntityId[MachinesGroup]): Eff[R, MachinesGroup] = {
     for {
-      groupMachines <- machinesGroupMachinesDal.findForMachine(uidMachine).execute
-      groups <- machinesGroups.find(groupMachines.map(_.uidMachinesGroup)).execute
-    } yield groups
-  }
-
-  override def get[R: _tDBOut: _machinesGroupsErrorEither](uidMachinesGroup: UUID): Eff[R, MachinesGroup] = {
-    for {
-      machinesGroupOpt <- machinesGroups.find(uidMachinesGroup).execute
+      machinesGroupOpt <- machinesGroups.find(machinesGroupId).execute
       machinesGroup <- if (machinesGroupOpt.isDefined) right(machinesGroupOpt.get)
       else
         left[R, MachinesGroupsError, MachinesGroup](
-          MachinesGroupNotFound(s"Unable to find machine for uid $uidMachinesGroup"))
+          MachinesGroupNotFound(s"Unable to find machine group for id $machinesGroupId"))
     } yield machinesGroup
+  }
+
+  override def getWithMachine[R: _tDBOut](machineId: EntityId[Machine]): Eff[R, Seq[MachinesGroup]] = {
+    for {
+      groupMachines <- machinesGroupMachinesDal.findForMachine(machineId).execute
+      groups <- machinesGroups.find(groupMachines.map(_.machinesGroupId)).execute
+    } yield groups
   }
 
 }

@@ -3,16 +3,16 @@ package com.mabrcosta.keysmanager.users.data
 import java.time.Instant
 import java.util.UUID
 
-import com.mabrcosta.keysmanager.core.data.BaseRepositoryEntity
+import com.mabrcosta.keysmanager.core.data.{BaseRepositoryEntity, EntityId}
 
-case class Key(id: Option[UUID] = Some(UUID.randomUUID()),
+case class Key(id: Option[EntityId[Key]] = Some(EntityId()),
                value: String,
-               uidOwnerSubject: UUID,
+               ownerUserId: EntityId[User],
                uidCreatorUser: Option[UUID] = None,
                uidLastModifierUser: Option[UUID] = None,
                creationInstant: Instant = Instant.now(),
                updateInstant: Instant = Instant.now())
-    extends BaseRepositoryEntity[Key, UUID] {
+    extends BaseRepositoryEntity[Key, EntityId[Key]] {
 
-  override def withId(id: UUID): Key = copy(id = Some(id))
+  override def withId(id: EntityId[Key]): Key = copy(id = Some(id))
 }

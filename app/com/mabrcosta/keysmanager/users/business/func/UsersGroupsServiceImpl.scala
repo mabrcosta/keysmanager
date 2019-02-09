@@ -1,10 +1,9 @@
 package com.mabrcosta.keysmanager.users.business.func
 
-import java.util.UUID
-
+import com.mabrcosta.keysmanager.core.data.EntityId
 import com.mabrcosta.keysmanager.core.persistence.util.EffectsDatabaseExecutor
 import com.mabrcosta.keysmanager.users.business.api.{UsersGroupNotFound, UsersGroupsError, UsersGroupsService, _usersGroupsErrorEither}
-import com.mabrcosta.keysmanager.users.data.{UsersGroup, UsersGroupUser}
+import com.mabrcosta.keysmanager.users.data.{UserAccessProvider, UsersGroup, UsersGroupUser}
 import com.mabrcosta.keysmanager.users.persistence.api.{UsersGroupsDal, UsersGroupsUsersDal}
 import javax.inject.Inject
 import org.atnos.eff.Eff
@@ -21,20 +20,21 @@ class UsersGroupsServiceImpl[TDBIO[_], TDBOut[_]] @Inject()(
 
   import effectsDatabaseExecutor._
 
-  override def get[R: _tDBOut: _usersGroupsErrorEither](uidUsersGroup: UUID): Eff[R, UsersGroup] = {
+  override def get[R: _tDBOut: _usersGroupsErrorEither](usersGroupId: EntityId[UsersGroup]): Eff[R, UsersGroup] = {
     for {
-      usersGroupOpt <- usersGroupsDal.find(uidUsersGroup).execute
+      usersGroupOpt <- usersGroupsDal.find(usersGroupId).execute
       usersGroup <- if (usersGroupOpt.isDefined) right(usersGroupOpt.get)
       else
-        left[R, UsersGroupsError, UsersGroup](UsersGroupNotFound(s"Unable to find users group for uid $uidUsersGroup"))
+        left[R, UsersGroupsError, UsersGroup](UsersGroupNotFound(s"Unable to find users group for id $usersGroupId"))
     } yield usersGroup
   }
 
-  override def getWithProviders[R: _tDBOut](uidUsersProviders: Seq[UUID]): Eff[R, Seq[UsersGroup]] = {
-    usersGroupsDal.findForUserAccessProviders(uidUsersProviders).execute
+  override def getWithProviders[R: _tDBOut](
+      userAccessProviderIds: Seq[EntityId[UserAccessProvider]]): Eff[R, Seq[UsersGroup]] = {
+    usersGroupsDal.findForUserAccessProviders(userAccessProviderIds).execute
   }
 
-  override def getUsers[R: _tDBOut](uidUsersGroups: Seq[UUID]): Eff[R, Seq[UsersGroupUser]] = {
-    usersGroupsUsersDal.findForUserGroups(uidUsersGroups).execute
+  override def getUsers[R: _tDBOut](usersGroupIds: Seq[EntityId[UsersGroup]]): Eff[R, Seq[UsersGroupUser]] = {
+    usersGroupsUsersDal.findForUserGroups(usersGroupIds).execute
   }
 }

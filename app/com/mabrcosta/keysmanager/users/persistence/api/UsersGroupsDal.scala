@@ -1,12 +1,11 @@
 package com.mabrcosta.keysmanager.users.persistence.api
 
-import java.util.UUID
-
+import com.mabrcosta.keysmanager.core.data.EntityId
 import com.mabrcosta.keysmanager.core.persistence.DatabaseDal
-import com.mabrcosta.keysmanager.users.data.UsersGroup
+import com.mabrcosta.keysmanager.users.data.{UserAccessProvider, UsersGroup}
 
-trait UsersGroupsDal[TIO[_]] extends DatabaseDal[UsersGroup, UUID, TIO] {
+trait UsersGroupsDal[TIO[_]] extends DatabaseDal[UsersGroup, EntityId[UsersGroup], TIO] {
 
-  def findForUserAccessProviders(uidUsersAccessProviders: Seq[UUID]): TIO[Seq[UsersGroup]]
+  def findForUserAccessProviders(usersAccessProviderIds: Seq[EntityId[UserAccessProvider]]): TIO[Seq[UsersGroup]]
 
 }

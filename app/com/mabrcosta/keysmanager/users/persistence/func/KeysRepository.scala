@@ -1,51 +1,53 @@
 package com.mabrcosta.keysmanager.users.persistence.func
 
-import java.util.UUID
-
+import com.mabrcosta.keysmanager.core.data.EntityId
 import com.mabrcosta.keysmanager.core.persistence.{BaseDBIORepository, PersistenceSchema}
-import com.mabrcosta.keysmanager.users.data.Key
+import com.mabrcosta.keysmanager.users.data.{Key, User}
 import com.mabrcosta.keysmanager.users.persistence.api.KeysDal
 import javax.inject.Inject
 import slick.ast.BaseTypedType
 import slick.ast.ColumnOption.Unique
 import slick.dbio.{DBIO => SlickDBIO}
-import slick.jdbc.JdbcProfile
+import slick.jdbc.{JdbcProfile, JdbcType}
 
 class KeysRepository @Inject()(private[this] val jdbcProfile: JdbcProfile)
-    extends BaseDBIORepository[Key, UUID](jdbcProfile)
+    extends BaseDBIORepository[Key](jdbcProfile)
     with KeysDal[SlickDBIO] {
 
   import profile.api._
 
   type TableType = Keys
   val tableQuery = TableQuery[Keys]
-  val pkType = implicitly[BaseTypedType[UUID]]
+  val pkType = implicitly[BaseTypedType[EntityId[Key]]]
+
+  implicit val userIdMapper: JdbcType[EntityId[User]] with BaseTypedType[EntityId[User]] =
+    IdMapper.entityIdMapper[User]
 
   class Keys(tag: Tag) extends BaseRepositoryTable(tag, Some(PersistenceSchema.schema), "keys") {
     def value = column[String]("value", Unique)
-    def uidOwnerSubject = column[UUID]("owner_user_id")
+    def ownerUserId = column[EntityId[User]]("owner_user_id")
 
     def * =
-      (id.?, value, uidOwnerSubject, uidCreatorUser, uidLastModifierUser, creationInstant,
+      (id.?, value, ownerUserId, uidCreatorUser, uidLastModifierUser, creationInstant,
         updateInstant) <> (Key.tupled, Key.unapply)
   }
 
   private[this] lazy val findForOwnerCompiled = Compiled(
-    (uidOwner: Rep[UUID]) => tableQuery.filter(_.uidOwnerSubject === uidOwner))
+    (userId: Rep[EntityId[User]]) => tableQuery.filter(_.ownerUserId === userId))
 
-  def findForOwner(uidOwner: UUID): DBIO[Seq[Key]] = findForOwnerCompiled(uidOwner).result
+  def findForOwner(userId: EntityId[User]): DBIO[Seq[Key]] = findForOwnerCompiled(userId).result
 
   private[this] lazy val findForUIDAndOwnerCompiled = Compiled(
-    (uid: Rep[UUID], uidOwner: Rep[UUID]) =>
+    (uid: Rep[EntityId[Key]], uidOwner: Rep[EntityId[User]]) =>
       tableQuery
         .filter(_.id === uid)
-        .filter(_.uidOwnerSubject === uidOwner))
+        .filter(_.ownerUserId === uidOwner))
 
-  def findForOwner(uid: UUID, uidOwner: UUID): DBIO[Option[Key]] =
-    findForUIDAndOwnerCompiled(uid, uidOwner).result.headOption
+  def findForOwner(keyId: EntityId[Key], userId: EntityId[User]): DBIO[Option[Key]] =
+    findForUIDAndOwnerCompiled(keyId, userId).result.headOption
 
-  def findForOwners(uidOwners: Seq[UUID]): DBIO[Seq[Key]] = {
-    tableQuery.filter(_.uidOwnerSubject inSet uidOwners).result
+  def findForOwners(userIds: Seq[EntityId[User]]): DBIO[Seq[Key]] = {
+    tableQuery.filter(_.ownerUserId inSet userIds).result
   }
 
 }

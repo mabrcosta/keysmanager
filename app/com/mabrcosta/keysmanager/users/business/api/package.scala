@@ -1,13 +1,13 @@
 package com.mabrcosta.keysmanager.users.business
 
-import java.util.UUID
-
 import cats.data.Reader
+import com.mabrcosta.keysmanager.core.data.EntityId
+import com.mabrcosta.keysmanager.users.data.User
 import org.atnos.eff.|=
 
 package object api {
 
-  type OwnerReader[A] = Reader[UUID, A]
+  type OwnerReader[A] = Reader[EntityId[User], A]
   type _ownerReader[R] = OwnerReader |= R
 
   type KeysErrorEither[A] = KeysError Either A

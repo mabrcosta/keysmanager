@@ -1,35 +1,38 @@
 package com.mabrcosta.keysmanager.machines.persistence.func
 
-import java.util.UUID
-
+import com.mabrcosta.keysmanager.core.data.EntityId
 import com.mabrcosta.keysmanager.core.persistence.{BaseDBIORepository, PersistenceSchema}
-import com.mabrcosta.keysmanager.machines.data.Machine
+import com.mabrcosta.keysmanager.machines.data.{Machine, MachineAccessProvider}
 import com.mabrcosta.keysmanager.machines.persistence.api.MachinesDal
 import javax.inject.Inject
 import slick.ast.BaseTypedType
 import slick.dbio.{DBIO => SlickDBIO}
-import slick.jdbc.JdbcProfile
+import slick.jdbc.{JdbcProfile, JdbcType}
 
 class MachinesRepository @Inject()(private[this] val jdbcProfile: JdbcProfile)
-    extends BaseDBIORepository[Machine, UUID](jdbcProfile)
+    extends BaseDBIORepository[Machine](jdbcProfile)
     with MachinesDal[SlickDBIO] {
 
   import profile.api._
 
   type TableType = Machines
   val tableQuery = TableQuery[Machines]
-  val pkType = implicitly[BaseTypedType[UUID]]
+  val pkType = implicitly[BaseTypedType[EntityId[Machine]]]
+
+  implicit val machineAccessProviderIdMapper
+    : JdbcType[EntityId[MachineAccessProvider]] with BaseTypedType[EntityId[MachineAccessProvider]] =
+    IdMapper.entityIdMapper[MachineAccessProvider]
 
   class Machines(tag: Tag) extends BaseRepositoryTable(tag, Some(PersistenceSchema.schema), "machines") {
     def name = column[String]("name")
     def hostname = column[String]("hostname")
-    def uidMachineAccessProvider = column[UUID]("machine_access_provider_id")
+    def machineAccessProviderId = column[EntityId[MachineAccessProvider]]("machine_access_provider_id")
 
     def * =
       (id.?,
        name,
        hostname,
-       uidMachineAccessProvider,
+       machineAccessProviderId,
        uidCreatorUser,
        uidLastModifierUser,
        creationInstant,

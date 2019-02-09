@@ -1,7 +1,6 @@
 package com.mabrcosta.keysmanager.machines.business.func
 
-import java.util.UUID
-
+import com.mabrcosta.keysmanager.core.data.EntityId
 import com.mabrcosta.keysmanager.core.persistence.util.EffectsDatabaseExecutor
 import com.mabrcosta.keysmanager.machines.business.api._
 import com.mabrcosta.keysmanager.machines.data.Machine
@@ -21,13 +20,13 @@ class MachinesServiceImpl[TDBIO[_], TDBOut[_]] @Inject()(
 
   import effectsDatabaseExecutor._
 
+  override def get[R: _tDBOut: _machinesErrorEither](machineId: EntityId[Machine]): Eff[R, Machine] = {
+    handleOptionalMachine(machinesDal.find(machineId).execute, s"Unable to find machine for id $machineId")
+  }
+
   override def getForHostname[R: _tDBOut: _machinesErrorEither](hostname: String): Eff[R, Machine] = {
     handleOptionalMachine(machinesDal.findForHostname(hostname).execute,
                           s"Unable to find machine for hostname: $hostname")
-  }
-
-  override def get[R: _tDBOut: _machinesErrorEither](uidMachine: UUID): Eff[R, Machine] = {
-    handleOptionalMachine(machinesDal.find(uidMachine).execute, s"Unable to find machine for uid $uidMachine")
   }
 
   private[this] def handleOptionalMachine[R: _machinesErrorEither](machineEffProvider: => Eff[R, Option[Machine]],
