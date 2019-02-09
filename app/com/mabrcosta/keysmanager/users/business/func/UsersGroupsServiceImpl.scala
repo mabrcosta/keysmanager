@@ -11,16 +11,16 @@ import org.atnos.eff.EitherEffect.{left, right}
 
 import scala.concurrent.ExecutionContext
 
-class UsersGroupsServiceImpl[TDBIO[_], TDBOut[_]] @Inject()(
-    private[this] val usersGroupsDal: UsersGroupsDal[TDBIO],
-    private[this] val usersGroupsUsersDal: UsersGroupsUsersDal[TDBIO],
-    private[this] val effectsDatabaseExecutor: EffectsDatabaseExecutor[TDBIO, TDBOut],
+class UsersGroupsServiceImpl[TIOIn[_], TIOOut[_]] @Inject()(
+    private[this] val usersGroupsDal: UsersGroupsDal[TIOIn],
+    private[this] val usersGroupsUsersDal: UsersGroupsUsersDal[TIOIn],
+    private[this] val effectsDatabaseExecutor: EffectsDatabaseExecutor[TIOIn, TIOOut],
     implicit val executionContext: ExecutionContext)
-    extends UsersGroupsService[TDBIO, TDBOut] {
+    extends UsersGroupsService[TIOIn, TIOOut] {
 
   import effectsDatabaseExecutor._
 
-  override def get[R: _tDBOut: _usersGroupsErrorEither](usersGroupId: EntityId[UsersGroup]): Eff[R, UsersGroup] = {
+  override def get[R: _TIOOut: _usersGroupsErrorEither](usersGroupId: EntityId[UsersGroup]): Eff[R, UsersGroup] = {
     for {
       usersGroupOpt <- usersGroupsDal.find(usersGroupId).execute
       usersGroup <- if (usersGroupOpt.isDefined) right(usersGroupOpt.get)
@@ -29,12 +29,12 @@ class UsersGroupsServiceImpl[TDBIO[_], TDBOut[_]] @Inject()(
     } yield usersGroup
   }
 
-  override def getWithProviders[R: _tDBOut](
+  override def getWithProviders[R: _TIOOut](
       userAccessProviderIds: Seq[EntityId[UserAccessProvider]]): Eff[R, Seq[UsersGroup]] = {
     usersGroupsDal.findForUserAccessProviders(userAccessProviderIds).execute
   }
 
-  override def getUsers[R: _tDBOut](usersGroupIds: Seq[EntityId[UsersGroup]]): Eff[R, Seq[UsersGroupUser]] = {
+  override def getUsers[R: _TIOOut](usersGroupIds: Seq[EntityId[UsersGroup]]): Eff[R, Seq[UsersGroupUser]] = {
     usersGroupsUsersDal.findForUserGroups(usersGroupIds).execute
   }
 }

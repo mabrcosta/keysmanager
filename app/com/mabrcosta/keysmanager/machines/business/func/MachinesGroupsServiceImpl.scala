@@ -11,16 +11,16 @@ import org.atnos.eff.EitherEffect.{left, right}
 
 import scala.concurrent.ExecutionContext
 
-class MachinesGroupsServiceImpl[TDBIO[_], TDBOut[_]] @Inject()(
-    private[this] val machinesGroups: MachinesGroupsDal[TDBIO],
-    private[this] val machinesGroupMachinesDal: MachinesGroupMachinesDal[TDBIO],
-    private[this] val effectsDatabaseExecutor: EffectsDatabaseExecutor[TDBIO, TDBOut],
+class MachinesGroupsServiceImpl[TIOIn[_], TIOOut[_]] @Inject()(
+    private[this] val machinesGroups: MachinesGroupsDal[TIOIn],
+    private[this] val machinesGroupMachinesDal: MachinesGroupMachinesDal[TIOIn],
+    private[this] val effectsDatabaseExecutor: EffectsDatabaseExecutor[TIOIn, TIOOut],
     implicit val executionContext: ExecutionContext)
-    extends MachinesGroupsService[TDBIO, TDBOut] {
+    extends MachinesGroupsService[TIOIn, TIOOut] {
 
   import effectsDatabaseExecutor._
 
-  override def get[R: _tDBOut: _machinesGroupsErrorEither](
+  override def get[R: _TIOOut: _machinesGroupsErrorEither](
       machinesGroupId: EntityId[MachinesGroup]): Eff[R, MachinesGroup] = {
     for {
       machinesGroupOpt <- machinesGroups.find(machinesGroupId).execute
@@ -31,7 +31,7 @@ class MachinesGroupsServiceImpl[TDBIO[_], TDBOut[_]] @Inject()(
     } yield machinesGroup
   }
 
-  override def getWithMachine[R: _tDBOut](machineId: EntityId[Machine]): Eff[R, Seq[MachinesGroup]] = {
+  override def getWithMachine[R: _TIOOut](machineId: EntityId[Machine]): Eff[R, Seq[MachinesGroup]] = {
     for {
       groupMachines <- machinesGroupMachinesDal.findForMachine(machineId).execute
       groups <- machinesGroups.find(groupMachines.map(_.machinesGroupId)).execute

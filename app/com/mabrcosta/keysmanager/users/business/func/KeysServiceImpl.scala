@@ -12,26 +12,26 @@ import org.atnos.eff.ReaderEffect._
 
 import scala.concurrent.ExecutionContext
 
-class KeysServiceImpl[TDBIO[_], TDBOut[_]] @Inject()(
-    private[this] val keysDal: KeysDal[TDBIO],
-    private[this] val effectsDatabaseExecutor: EffectsDatabaseExecutor[TDBIO, TDBOut],
+class KeysServiceImpl[TIOIn[_], TIOOut[_]] @Inject()(
+    private[this] val keysDal: KeysDal[TIOIn],
+    private[this] val effectsDatabaseExecutor: EffectsDatabaseExecutor[TIOIn, TIOOut],
     implicit val executionContext: ExecutionContext)
-    extends KeysService[TDBIO, TDBOut] {
+    extends KeysService[TIOIn, TIOOut] {
 
   import effectsDatabaseExecutor._
 
-  override def getForOwner[R: _tDBOut: _ownerReader]: Eff[R, Seq[Key]] = {
+  override def getForOwner[R: _TIOOut: _ownerReader]: Eff[R, Seq[Key]] = {
     for {
       uidOwner <- ask
       keys <- keysDal.findForOwner(uidOwner).execute
     } yield keys
   }
 
-  override def getForOwners[R: _tDBOut](ownerUserIds: Seq[EntityId[User]]): Eff[R, Seq[Key]] = {
+  override def getForOwners[R: _TIOOut](ownerUserIds: Seq[EntityId[User]]): Eff[R, Seq[Key]] = {
     keysDal.findForOwners(ownerUserIds).execute
   }
 
-  override def add[R: _tDBOut: _ownerReader](keyValue: String): Eff[R, Key] = {
+  override def add[R: _TIOOut: _ownerReader](keyValue: String): Eff[R, Key] = {
     for {
       uidOwner <- ask
       key = Key(value = keyValue, ownerUserId = uidOwner)
@@ -39,7 +39,7 @@ class KeysServiceImpl[TDBIO[_], TDBOut[_]] @Inject()(
     } yield res
   }
 
-  override def delete[R: _tDBOut: _ownerReader: _keysErrorEither](keyId: EntityId[Key]): Eff[R, Boolean] = {
+  override def delete[R: _TIOOut: _ownerReader: _keysErrorEither](keyId: EntityId[Key]): Eff[R, Boolean] = {
     for {
       ownerUserId <- ask
       keyOpt <- keysDal.findForOwner(keyId, ownerUserId).execute

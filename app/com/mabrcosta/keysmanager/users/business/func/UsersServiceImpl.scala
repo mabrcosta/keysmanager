@@ -11,15 +11,15 @@ import org.atnos.eff.EitherEffect.{left, right}
 
 import scala.concurrent.ExecutionContext
 
-class UsersServiceImpl[TDBIO[_], TDBOut[_]] @Inject()(
-    private[this] val usersDal: UsersDal[TDBIO],
-    private[this] val effectsDatabaseExecutor: EffectsDatabaseExecutor[TDBIO, TDBOut],
+class UsersServiceImpl[TIOIn[_], TIOOut[_]] @Inject()(
+    private[this] val usersDal: UsersDal[TIOIn],
+    private[this] val effectsDatabaseExecutor: EffectsDatabaseExecutor[TIOIn, TIOOut],
     implicit val executionContext: ExecutionContext)
-    extends UsersService[TDBIO, TDBOut] {
+    extends UsersService[TIOIn, TIOOut] {
 
   import effectsDatabaseExecutor._
 
-  override def get[R: _tDBOut: _usersErrorEither](userId: EntityId[User]): Eff[R, User] = {
+  override def get[R: _TIOOut: _usersErrorEither](userId: EntityId[User]): Eff[R, User] = {
     for {
       userOpt <- usersDal.find(userId).execute
       user <- if (userOpt.isDefined) right(userOpt.get)
@@ -27,11 +27,11 @@ class UsersServiceImpl[TDBIO[_], TDBOut[_]] @Inject()(
     } yield user
   }
 
-  override def get[R: _tDBOut: _usersErrorEither](userIds: Seq[EntityId[User]]): Eff[R, Seq[User]] = {
+  override def get[R: _TIOOut: _usersErrorEither](userIds: Seq[EntityId[User]]): Eff[R, Seq[User]] = {
     usersDal.find(userIds).execute
   }
 
-  override def getWithProviders[R: _tDBOut](
+  override def getWithProviders[R: _TIOOut](
       userAccessProviderIds: Seq[EntityId[UserAccessProvider]]): Eff[R, Seq[User]] = {
     usersDal.findForUserAccessProviders(userAccessProviderIds).execute
   }

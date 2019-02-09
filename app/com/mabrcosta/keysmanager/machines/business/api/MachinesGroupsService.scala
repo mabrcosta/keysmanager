@@ -5,10 +5,10 @@ import com.mabrcosta.keysmanager.core.data.EntityId
 import com.mabrcosta.keysmanager.machines.data.{Machine, MachinesGroup}
 import org.atnos.eff.Eff
 
-trait MachinesGroupsService[TDBIO[_], TDBOut[_]] extends BaseService[TDBIO, TDBOut] {
+trait MachinesGroupsService[TIOIn[_], TIOOut[_]] extends BaseService[TIOIn, TIOOut] {
 
-  def get[R: _tDBOut: _machinesGroupsErrorEither](machinesGroupId: EntityId[MachinesGroup]): Eff[R, MachinesGroup]
+  def get[R: _TIOOut: _machinesGroupsErrorEither](machinesGroupId: EntityId[MachinesGroup]): Eff[R, MachinesGroup]
 
-  def getWithMachine[R: _tDBOut](machineId: EntityId[Machine]): Eff[R, Seq[MachinesGroup]]
+  def getWithMachine[R: _TIOOut](machineId: EntityId[Machine]): Eff[R, Seq[MachinesGroup]]
 
 }

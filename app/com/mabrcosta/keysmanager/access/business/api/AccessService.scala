@@ -8,13 +8,13 @@ import com.mabrcosta.keysmanager.users.business.api.{_usersErrorEither, _usersGr
 import com.mabrcosta.keysmanager.users.data.Key
 import org.atnos.eff.Eff
 
-trait AccessService[TDBIO[_], TDBOut[_]] extends BaseService[TDBIO, TDBOut] {
+trait AccessService[TIOIn[_], TIOOut[_]] extends BaseService[TIOIn, TIOOut] {
 
-  def getAuthorizedKeys[R: _tDBOut: _machinesErrorEither](hostname: String): Eff[R, Seq[Key]]
+  def getAuthorizedKeys[R: _TIOOut: _machinesErrorEither](hostname: String): Eff[R, Seq[Key]]
 
-  def add[R: _tDBOut: _machinesErrorEither: _machinesGroupsErrorEither: _usersErrorEither: _usersGroupsErrorEither](
+  def add[R: _TIOOut: _machinesErrorEither: _machinesGroupsErrorEither: _usersErrorEither: _usersGroupsErrorEither](
       accessProvider: AccessProviderCreationData): Eff[R, AccessProviderData]
 
-  def delete[R: _tDBOut: _accessErrorEither](accessProviderId: EntityId[AccessProvider]): Eff[R, Boolean]
+  def delete[R: _TIOOut: _accessErrorEither](accessProviderId: EntityId[AccessProvider]): Eff[R, Boolean]
 
 }

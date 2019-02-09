@@ -11,20 +11,20 @@ import org.atnos.eff.EitherEffect.{left, right}
 
 import scala.concurrent.ExecutionContext
 
-class MachinesServiceImpl[TDBIO[_], TDBOut[_]] @Inject()(
-    private[this] val machinesDal: MachinesDal[TDBIO],
-    private[this] val machinesGroupService: MachinesGroupsService[TDBIO, TDBOut],
-    private[this] val effectsDatabaseExecutor: EffectsDatabaseExecutor[TDBIO, TDBOut],
+class MachinesServiceImpl[TIOIn[_], TIOOut[_]] @Inject()(
+    private[this] val machinesDal: MachinesDal[TIOIn],
+    private[this] val machinesGroupService: MachinesGroupsService[TIOIn, TIOOut],
+    private[this] val effectsDatabaseExecutor: EffectsDatabaseExecutor[TIOIn, TIOOut],
     implicit val executionContext: ExecutionContext)
-    extends MachinesService[TDBIO, TDBOut] {
+    extends MachinesService[TIOIn, TIOOut] {
 
   import effectsDatabaseExecutor._
 
-  override def get[R: _tDBOut: _machinesErrorEither](machineId: EntityId[Machine]): Eff[R, Machine] = {
+  override def get[R: _TIOOut: _machinesErrorEither](machineId: EntityId[Machine]): Eff[R, Machine] = {
     handleOptionalMachine(machinesDal.find(machineId).execute, s"Unable to find machine for id $machineId")
   }
 
-  override def getForHostname[R: _tDBOut: _machinesErrorEither](hostname: String): Eff[R, Machine] = {
+  override def getForHostname[R: _TIOOut: _machinesErrorEither](hostname: String): Eff[R, Machine] = {
     handleOptionalMachine(machinesDal.findForHostname(hostname).execute,
                           s"Unable to find machine for hostname: $hostname")
   }
