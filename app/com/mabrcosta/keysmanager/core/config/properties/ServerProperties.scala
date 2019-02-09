@@ -7,6 +7,4 @@ object ServerProperties {
   val port = "port"
 
   val apiBaseURL = "api.base_url"
-
-  val corsAllowedMethods = "cors.allowed_methods"
 }

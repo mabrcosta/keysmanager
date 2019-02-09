@@ -28,7 +28,6 @@ keysmanager {
   server {
     port = 9881
     base_url = "http://localhost"
-    cors.allowed_methods = ["GET", "POST", "HEAD", "OPTIONS"]
     api {
       base_url = ${keysmanager.server.base_url}"/api"
     }

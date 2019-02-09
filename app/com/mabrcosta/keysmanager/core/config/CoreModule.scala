@@ -11,8 +11,6 @@ import javax.inject.Singleton
 import org.atnos.eff.ExecutorServices
 import org.atnos.eff.concurrent.Scheduler
 
-import scala.collection.JavaConverters._
-
 class CoreModule extends AbstractModule {
 
   override def configure(): Unit = {
@@ -26,12 +24,11 @@ class CoreModule extends AbstractModule {
 
     val baseURL = URI.create(serverConfig.getString(ServerProperties.baseURL))
     val port = serverConfig.getInt(ServerProperties.port)
-    val corsAllowedMethods = serverConfig.getStringList(ServerProperties.corsAllowedMethods)
 
     val apiBaseURL = URI.create(serverConfig.getString(ServerProperties.apiBaseURL))
     val api = ServerAPIConfiguration(apiBaseURL)
 
-    ServerConfiguration(baseURL, port, corsAllowedMethods.asScala.toList, api)
+    ServerConfiguration(baseURL, port, api)
   }
 
   @Provides
