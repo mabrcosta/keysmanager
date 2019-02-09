@@ -10,7 +10,7 @@ import slick.ast.BaseTypedType
 import slick.dbio.{DBIO => SlickDBIO}
 import slick.jdbc.JdbcProfile
 
-class MachinesGroupMachinesRepository @Inject()(private val jdbcProfile: JdbcProfile)
+class MachinesGroupMachinesRepository @Inject()(private[this] val jdbcProfile: JdbcProfile)
     extends BaseDBIORepository[MachinesGroupMachine, UUID](jdbcProfile)
     with MachinesGroupMachinesDal[SlickDBIO] {
 
@@ -29,7 +29,7 @@ class MachinesGroupMachinesRepository @Inject()(private val jdbcProfile: JdbcPro
       updateInstant) <> (MachinesGroupMachine.tupled, MachinesGroupMachine.unapply)
   }
 
-  private lazy val findForMachineCompiled = Compiled(
+  private[this] lazy val findForMachineCompiled = Compiled(
     (uidMachine: Rep[UUID]) => tableQuery.filter(_.uidMachine === uidMachine))
 
   def findForMachine(uidMachine: UUID): DBIO[Seq[MachinesGroupMachine]] = findForMachineCompiled(uidMachine).result

@@ -10,7 +10,7 @@ import slick.ast.BaseTypedType
 import slick.dbio.{DBIO => SlickDBIO}
 import slick.jdbc.JdbcProfile
 
-class MachinesRepository @Inject()(private val jdbcProfile: JdbcProfile)
+class MachinesRepository @Inject()(private[this] val jdbcProfile: JdbcProfile)
     extends BaseDBIORepository[Machine, UUID](jdbcProfile)
     with MachinesDal[SlickDBIO] {
 
@@ -36,7 +36,7 @@ class MachinesRepository @Inject()(private val jdbcProfile: JdbcProfile)
        updateInstant) <> (Machine.tupled, Machine.unapply)
   }
 
-  private lazy val findForHostnameCompiled = Compiled(
+  private[this] lazy val findForHostnameCompiled = Compiled(
     (hostname: Rep[String]) => tableQuery.filter(_.hostname === hostname))
 
   def findForHostname(hostname: String): DBIO[Option[Machine]] =

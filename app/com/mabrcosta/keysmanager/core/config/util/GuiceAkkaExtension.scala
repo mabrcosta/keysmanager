@@ -31,7 +31,7 @@ object GuiceAkkaExtension
   * Akka extension implementation
   */
 class GuiceAkkaExtensionImpl extends Extension {
-  private var injector: Injector = _
+  private[this] var injector: Injector = _
 
   /**
     * Initializes the extension with the guice injector.  This must be called before

@@ -24,7 +24,7 @@ trait JdbcProfileAsyncSession {
       }
     }
 
-    private def handleExecution[T](session: JdbcBackend#BaseSession,
+    private[this] def handleExecution[T](session: JdbcBackend#BaseSession,
                                    f: => Future[T],
                                    isSuccess: T => Boolean,
                                    success: () => Unit,
@@ -41,16 +41,16 @@ trait JdbcProfileAsyncSession {
         })
     }
 
-    private def commitAndEndTransaction(session: JdbcBackend#BaseSession): Unit =
+    private[this] def commitAndEndTransaction(session: JdbcBackend#BaseSession): Unit =
       session.endInTransaction(session.conn.commit())
 
-    private def rollbackAndEndTransaction(session: JdbcBackend#BaseSession): Unit =
+    private[this] def rollbackAndEndTransaction(session: JdbcBackend#BaseSession): Unit =
       session.endInTransaction(session.conn.rollback())
 
-    private def rollback(session: JdbcBackend#BaseSession, savepoint: Savepoint): Unit =
+    private[this] def rollback(session: JdbcBackend#BaseSession, savepoint: Savepoint): Unit =
       session.conn.rollback(savepoint)
 
-    private def setSavepoint(session: JdbcBackend#BaseSession): Savepoint = session.conn.setSavepoint()
+    private[this] def setSavepoint(session: JdbcBackend#BaseSession): Savepoint = session.conn.setSavepoint()
 
   }
 }

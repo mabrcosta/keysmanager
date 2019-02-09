@@ -112,7 +112,7 @@ class JdbcProfileAsyncDatabaseSpec extends AsyncWordSpec {
 
   }
 
-  private def withTransaction[T](asyncDatabase: JdbcProfileAsyncDatabase,
+  private[this] def withTransaction[T](asyncDatabase: JdbcProfileAsyncDatabase,
                                  f: (WithProvidedSessionJdbcBackend#WithSessionDatabase) => Future[T]) = {
     asyncDatabase.withTransaction { session =>
       f(session)
@@ -121,7 +121,7 @@ class JdbcProfileAsyncDatabaseSpec extends AsyncWordSpec {
     }
   }
 
-  private def withFailedTransaction[T](asyncDatabase: JdbcProfileAsyncDatabase,
+  private[this] def withFailedTransaction[T](asyncDatabase: JdbcProfileAsyncDatabase,
                                        f: (WithProvidedSessionJdbcBackend#WithSessionDatabase) => Future[T]) = {
     withTransaction(asyncDatabase, s => {
       f(s).flatMap(_ => Future.failed(new TestException()))

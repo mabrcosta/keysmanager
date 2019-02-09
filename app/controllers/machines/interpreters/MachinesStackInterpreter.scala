@@ -12,7 +12,7 @@ import slick.dbio.DBIO
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class MachinesStackInterpreter @Inject()(private val database: JdbcProfileAsyncDatabase,
+class MachinesStackInterpreter @Inject()(private[this] val database: JdbcProfileAsyncDatabase,
                                          implicit val executionContext: ExecutionContext,
                                          implicit val scheduler: Scheduler) {
 

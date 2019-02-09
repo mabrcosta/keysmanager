@@ -19,10 +19,10 @@
 //  implicit val machinesGroupAccessCreationDataFormat: RootJsonFormat[MachinesGroupAccessCreationData] = jsonFormat1(
 //    MachinesGroupAccessCreationData)
 //
-//  private val KEY_TYPE = "_type"
-//  private val KEY_SOURCE = "_source"
+//  private[this] val KEY_TYPE = "_type"
+//  private[this] val KEY_SOURCE = "_source"
 //
-//  private def typeSourceWriter[T](typeValue: String, obj: JsValue): JsObject = {
+//  private[this] def typeSourceWriter[T](typeValue: String, obj: JsValue): JsObject = {
 //    JsObject(
 //      KEY_TYPE -> JsString(typeValue),
 //      KEY_SOURCE -> obj
@@ -32,8 +32,8 @@
 //  implicit object UserAccessCreationDataJsonFormat
 //      extends RootJsonFormat[Either[UsersGroupAccessCreationData, UserAccessCreationData]] {
 //
-//    private val VALUE_TYPE_USER = "user"
-//    private val VALUE_TYPE_USERS_GROUP = "users_group"
+//    private[this] val VALUE_TYPE_USER = "user"
+//    private[this] val VALUE_TYPE_USERS_GROUP = "users_group"
 //
 //    def write(data: Either[UsersGroupAccessCreationData, UserAccessCreationData]): JsObject = data match {
 //      case Right(user) => typeSourceWriter(VALUE_TYPE_USER, userAccessCreationDataFormat.write(user))
@@ -54,8 +54,8 @@
 //  implicit object MachineAccessCreationDataJsonFormat
 //      extends RootJsonFormat[Either[MachinesGroupAccessCreationData, MachineAccessCreationData]] {
 //
-//    private val VALUE_TYPE_MACHINE = "machine"
-//    private val VALUE_TYPE_MACHINES_GROUP = "machines_group"
+//    private[this] val VALUE_TYPE_MACHINE = "machine"
+//    private[this] val VALUE_TYPE_MACHINES_GROUP = "machines_group"
 //
 //    def write(data: Either[MachinesGroupAccessCreationData, MachineAccessCreationData]): JsObject = data match {
 //      case Right(machine) => typeSourceWriter(VALUE_TYPE_MACHINE, machineAccessCreationDataFormat.write(machine))
@@ -78,8 +78,8 @@
 //
 //  implicit object UserAccessDataJsonFormat extends RootJsonFormat[Either[UsersGroup, User]] {
 //
-//    private val VALUE_TYPE_USER = "user"
-//    private val VALUE_TYPE_USERS_GROUP = "users_group"
+//    private[this] val VALUE_TYPE_USER = "user"
+//    private[this] val VALUE_TYPE_USERS_GROUP = "users_group"
 //
 //    def write(data: Either[UsersGroup, User]): JsObject = data match {
 //      case Right(user) => typeSourceWriter(VALUE_TYPE_USER, userFormat.write(user))
@@ -99,8 +99,8 @@
 //
 //  implicit object MachineAccessDataJsonFormat extends RootJsonFormat[Either[MachinesGroup, Machine]] {
 //
-//    private val VALUE_TYPE_MACHINE = "machine"
-//    private val VALUE_TYPE_MACHINES_GROUP = "machines_group"
+//    private[this] val VALUE_TYPE_MACHINE = "machine"
+//    private[this] val VALUE_TYPE_MACHINES_GROUP = "machines_group"
 //
 //    def write(data: Either[MachinesGroup, Machine]): JsObject = data match {
 //      case Right(machine) => typeSourceWriter(VALUE_TYPE_MACHINE, machineFormat.write(machine))

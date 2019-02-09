@@ -9,7 +9,7 @@ import slick.ast.BaseTypedType
 import slick.dbio.{DBIO => SlickDBIO}
 import slick.jdbc.JdbcProfile
 
-class MachinesAccessProvidersRepository @Inject()(private val jdbcProfile: JdbcProfile)
+class MachinesAccessProvidersRepository @Inject()(private[this] val jdbcProfile: JdbcProfile)
     extends BaseDBIORepository[MachinesAccessProvider, UUID](jdbcProfile)
     with DatabaseDal[MachinesAccessProvider, UUID, SlickDBIO] {
 

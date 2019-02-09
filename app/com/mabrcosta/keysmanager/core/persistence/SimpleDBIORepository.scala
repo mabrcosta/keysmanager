@@ -17,7 +17,7 @@ abstract class SimpleDBIORepository[TEntity <: Entity[TEntity, TKey], TKey](val 
     def id = column[TKey]("id", O.PrimaryKey)
   }
 
-  private lazy val existsCompiled = Compiled((id: Rep[TKey]) => tableQuery.filter(_.id === id).exists)
+  private[this] lazy val existsCompiled = Compiled((id: Rep[TKey]) => tableQuery.filter(_.id === id).exists)
 
   override def exists(id: TKey): DBIO[Boolean] = {
     existsCompiled(id).result

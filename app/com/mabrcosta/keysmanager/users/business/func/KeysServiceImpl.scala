@@ -14,8 +14,8 @@ import org.atnos.eff.ReaderEffect._
 import scala.concurrent.ExecutionContext
 
 class KeysServiceImpl[TDBIO[_], TDBOut[_]] @Inject()(
-    private val keysDal: KeysDal[TDBIO],
-    private val effectsDatabaseExecutor: EffectsDatabaseExecutor[TDBIO, TDBOut],
+    private[this] val keysDal: KeysDal[TDBIO],
+    private[this] val effectsDatabaseExecutor: EffectsDatabaseExecutor[TDBIO, TDBOut],
     implicit val executionContext: ExecutionContext)
     extends KeysService[TDBIO, TDBOut] {
 

@@ -11,8 +11,8 @@
 //import javax.inject.Inject
 //import slick.dbio.DBIO
 //
-//class KeysHttpService @Inject()(private val keyService: KeysService[DBIO, DBIO],
-//                                private val stackInterpreter: StackInterpreter)
+//class KeysHttpService @Inject()(private[this] val keyService: KeysService[DBIO, DBIO],
+//                                private[this] val stackInterpreter: StackInterpreter)
 //    extends BaseHttpService(stackInterpreter) with KeysJsonSupport
 //    with LazyLogging {
 //

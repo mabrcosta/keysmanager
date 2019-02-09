@@ -11,7 +11,7 @@ import slick.ast.ColumnOption.Unique
 import slick.dbio.{DBIO => SlickDBIO}
 import slick.jdbc.JdbcProfile
 
-class KeysRepository @Inject()(private val jdbcProfile: JdbcProfile)
+class KeysRepository @Inject()(private[this] val jdbcProfile: JdbcProfile)
     extends BaseDBIORepository[Key, UUID](jdbcProfile)
     with KeysDal[SlickDBIO] {
 
@@ -30,12 +30,12 @@ class KeysRepository @Inject()(private val jdbcProfile: JdbcProfile)
         updateInstant) <> (Key.tupled, Key.unapply)
   }
 
-  private lazy val findForOwnerCompiled = Compiled(
+  private[this] lazy val findForOwnerCompiled = Compiled(
     (uidOwner: Rep[UUID]) => tableQuery.filter(_.uidOwnerSubject === uidOwner))
 
   def findForOwner(uidOwner: UUID): DBIO[Seq[Key]] = findForOwnerCompiled(uidOwner).result
 
-  private lazy val findForUIDAndOwnerCompiled = Compiled(
+  private[this] lazy val findForUIDAndOwnerCompiled = Compiled(
     (uid: Rep[UUID], uidOwner: Rep[UUID]) =>
       tableQuery
         .filter(_.id === uid)

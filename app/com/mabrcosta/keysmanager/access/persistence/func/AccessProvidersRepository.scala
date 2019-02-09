@@ -11,7 +11,7 @@ import slick.ast.BaseTypedType
 import slick.dbio.{DBIO => SlickDBIO}
 import slick.jdbc.{JdbcProfile, JdbcType}
 
-class AccessProvidersRepository @Inject()(private val jdbcProfile: JdbcProfile)
+class AccessProvidersRepository @Inject()(private[this] val jdbcProfile: JdbcProfile)
     extends BaseDBIORepository[AccessProvider, UUID](jdbcProfile)
     with AccessProvidersDal[SlickDBIO] {
 

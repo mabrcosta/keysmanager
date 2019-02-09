@@ -3,21 +3,11 @@ package com.mabrcosta.keysmanager.access.business.func
 import java.time.Instant
 import java.util.UUID
 
-import com.mabrcosta.keysmanager.access.business.api.{
-  AccessError,
-  AccessProviderNotFound,
-  AccessService,
-  _accessErrorEither
-}
+import com.mabrcosta.keysmanager.access.business.api.{AccessError, AccessProviderNotFound, AccessService, _accessErrorEither}
 import com.mabrcosta.keysmanager.access.data._
 import com.mabrcosta.keysmanager.access.persistence.api.AccessProvidersDal
 import com.mabrcosta.keysmanager.core.persistence.util.EffectsDatabaseExecutor
-import com.mabrcosta.keysmanager.machines.business.api.{
-  MachinesGroupsService,
-  MachinesService,
-  _machinesErrorEither,
-  _machinesGroupsErrorEither
-}
+import com.mabrcosta.keysmanager.machines.business.api.{MachinesGroupsService, MachinesService, _machinesErrorEither, _machinesGroupsErrorEither}
 import com.mabrcosta.keysmanager.machines.data.{Machine, MachinesGroup}
 import com.mabrcosta.keysmanager.users.business.api._
 import com.mabrcosta.keysmanager.users.data.{Key, User, UsersGroup}
@@ -28,13 +18,13 @@ import org.atnos.eff.EitherEffect.{left, right}
 import scala.concurrent.ExecutionContext
 
 class AccessServiceImpl[TDBIO[_], TDBOut[_]] @Inject()(
-    private val accessProvidersDal: AccessProvidersDal[TDBIO],
-    private val machinesService: MachinesService[TDBIO, TDBOut],
-    private val machinesGroupService: MachinesGroupsService[TDBIO, TDBOut],
-    private val usersService: UsersService[TDBIO, TDBOut],
-    private val usersGroupService: UsersGroupsService[TDBIO, TDBOut],
-    private val keysService: KeysService[TDBIO, TDBOut],
-    private val effectsDatabaseExecutor: EffectsDatabaseExecutor[TDBIO, TDBOut],
+    private[this] val accessProvidersDal: AccessProvidersDal[TDBIO],
+    private[this] val machinesService: MachinesService[TDBIO, TDBOut],
+    private[this] val machinesGroupService: MachinesGroupsService[TDBIO, TDBOut],
+    private[this] val usersService: UsersService[TDBIO, TDBOut],
+    private[this] val usersGroupService: UsersGroupsService[TDBIO, TDBOut],
+    private[this] val keysService: KeysService[TDBIO, TDBOut],
+    private[this] val effectsDatabaseExecutor: EffectsDatabaseExecutor[TDBIO, TDBOut],
     implicit val executionContext: ExecutionContext)
     extends AccessService[TDBIO, TDBOut] {
 
@@ -62,7 +52,7 @@ class AccessServiceImpl[TDBIO[_], TDBOut[_]] @Inject()(
     } yield keys
   }
 
-  private def get[R: _tDBOut: _accessErrorEither](uidProvider: UUID): Eff[R, AccessProvider] = {
+  private[this] def get[R: _tDBOut: _accessErrorEither](uidProvider: UUID): Eff[R, AccessProvider] = {
     for {
       providerOpt <- accessProvidersDal.find(uidProvider).execute
       provider <- if (providerOpt.isDefined) right(providerOpt.get)
@@ -91,7 +81,7 @@ class AccessServiceImpl[TDBIO[_], TDBOut[_]] @Inject()(
     } yield AccessProviderData(result, usersProvider, machinesProvider)
   }
 
-  private def getMachinesAccessProvider[R: _tDBOut: _machinesErrorEither: _machinesGroupsErrorEither](
+  private[this] def getMachinesAccessProvider[R: _tDBOut: _machinesErrorEither: _machinesGroupsErrorEither](
       machineAccess: Either[MachinesGroupAccessCreationData, MachineAccessCreationData])
     : Eff[R, Either[MachinesGroup, Machine]] = {
     machineAccess match {
@@ -100,7 +90,7 @@ class AccessServiceImpl[TDBIO[_], TDBOut[_]] @Inject()(
     }
   }
 
-  private def getUsersAccessProvider[R: _tDBOut: _usersErrorEither: _usersGroupsErrorEither](
+  private[this] def getUsersAccessProvider[R: _tDBOut: _usersErrorEither: _usersGroupsErrorEither](
       userAccess: Either[UsersGroupAccessCreationData, UserAccessCreationData]): Eff[R, Either[UsersGroup, User]] = {
     userAccess match {
       case Right(user)      => usersService.get[R](user.uid).map(Right(_))

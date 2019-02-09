@@ -20,7 +20,7 @@ class CoreModule extends ScalaModule {
 
   val migrationsResourcesPackage = "com.mabrcosta.keysmanager.migration"
 
-  private lazy val migrationsBinder = ScalaMultibinder.newSetBinder[DatabaseMigratorInfo](binderAccess)
+  private[this] lazy val migrationsBinder = ScalaMultibinder.newSetBinder[DatabaseMigratorInfo](binderAccess)
   private[this] def addMigrationInfo: DatabaseMigratorInfo => Unit = migrationsBinder.addBinding.toInstance(_)
 
   override def configure(): Unit = {

@@ -14,17 +14,17 @@
 //import javax.inject.Inject
 //import slick.jdbc.JdbcProfile
 //
-//class SchemaHttpService @Inject()(private val profile: JdbcProfile,
-//                                  private val users: UsersRepository,
-//                                  private val usersGroups: UsersGroupsRepository,
-//                                  private val usersGroupsUsers: UsersGroupsUsersRepository,
-//                                  private val usersAccessProviders: UsersAccessProvidersRepository,
-//                                  private val keys: KeysRepository,
-//                                  private val machines: MachinesRepository,
-//                                  private val machinesGroups: MachinesGroupsRepository,
-//                                  private val machinesGroupMachines: MachinesGroupMachinesRepository,
-//                                  private val machinesAccessProviders: MachinesAccessProvidersRepository,
-//                                  private val accessProviders: AccessProvidersRepository)
+//class SchemaHttpService @Inject()(private[this] val profile: JdbcProfile,
+//                                  private[this] val users: UsersRepository,
+//                                  private[this] val usersGroups: UsersGroupsRepository,
+//                                  private[this] val usersGroupsUsers: UsersGroupsUsersRepository,
+//                                  private[this] val usersAccessProviders: UsersAccessProvidersRepository,
+//                                  private[this] val keys: KeysRepository,
+//                                  private[this] val machines: MachinesRepository,
+//                                  private[this] val machinesGroups: MachinesGroupsRepository,
+//                                  private[this] val machinesGroupMachines: MachinesGroupMachinesRepository,
+//                                  private[this] val machinesAccessProviders: MachinesAccessProvidersRepository,
+//                                  private[this] val accessProviders: AccessProvidersRepository)
 //    extends LazyLogging {
 //
 //  import profile.api._

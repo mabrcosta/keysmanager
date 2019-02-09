@@ -15,7 +15,7 @@ class DatabaseMigrator @Inject()(migrators: Set[DatabaseMigratorInfo],
                                  databaseConfig: DatabaseConfig[JdbcProfile])
     extends LazyLogging {
 
-  private val PROPERTIES_FILE_NAME = "DatabaseMigrator.properties";
+  private[this] val PROPERTIES_FILE_NAME = "DatabaseMigrator.properties";
 
   def migrate(info: DatabaseMigratorInfo) {
     val flyway = new Flyway()

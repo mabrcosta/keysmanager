@@ -13,9 +13,9 @@ import org.atnos.eff.EitherEffect.{left, right}
 import scala.concurrent.ExecutionContext
 
 class MachinesServiceImpl[TDBIO[_], TDBOut[_]] @Inject()(
-    private val machinesDal: MachinesDal[TDBIO],
-    private val machinesGroupService: MachinesGroupsService[TDBIO, TDBOut],
-    private val effectsDatabaseExecutor: EffectsDatabaseExecutor[TDBIO, TDBOut],
+    private[this] val machinesDal: MachinesDal[TDBIO],
+    private[this] val machinesGroupService: MachinesGroupsService[TDBIO, TDBOut],
+    private[this] val effectsDatabaseExecutor: EffectsDatabaseExecutor[TDBIO, TDBOut],
     implicit val executionContext: ExecutionContext)
     extends MachinesService[TDBIO, TDBOut] {
 

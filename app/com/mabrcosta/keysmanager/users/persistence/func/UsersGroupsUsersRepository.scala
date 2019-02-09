@@ -10,7 +10,7 @@ import slick.ast.BaseTypedType
 import slick.dbio.{DBIO => SlickDBIO}
 import slick.jdbc.JdbcProfile
 
-class UsersGroupsUsersRepository @Inject()(private val jdbcProfile: JdbcProfile)
+class UsersGroupsUsersRepository @Inject()(private[this] val jdbcProfile: JdbcProfile)
     extends BaseDBIORepository[UsersGroupUser, UUID](jdbcProfile)
     with UsersGroupsUsersDal[SlickDBIO] {
 

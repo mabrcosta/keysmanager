@@ -129,15 +129,15 @@
 //    }
 //  }
 //
-//  private def mockEffectInterpreter[T](effect: Eff[Stack, T], result: T): Unit = {
+//  private[this] def mockEffectInterpreter[T](effect: Eff[Stack, T], result: T): Unit = {
 //    mockEffectInterpreter(effect, Right(result))
 //  }
 //
-//  private def mockEffectInterpreter[T](effect: Eff[Stack, T], error: Error): Unit = {
+//  private[this] def mockEffectInterpreter[T](effect: Eff[Stack, T], error: Error): Unit = {
 //    mockEffectInterpreter(effect, Left(error))
 //  }
 //
-//  private def mockEffectInterpreter[T](effect: Eff[Stack, T], result: Either[Error, T]): Unit = {
+//  private[this] def mockEffectInterpreter[T](effect: Eff[Stack, T], result: Either[Error, T]): Unit = {
 //    Mockito
 //      .when(interpreter.run(ArgumentMatchers.eq(effect), ArgumentMatchers.eq(uidOwner)))
 //      .thenReturn(Future.successful(result))

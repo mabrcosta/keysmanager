@@ -11,8 +11,8 @@
 //import javax.inject.Inject
 //import slick.dbio.DBIO
 //
-//class MachinesHttpService @Inject()(private val machinesService: MachinesService[DBIO, DBIO],
-//                                    private val stackInterpreter: StackInterpreter)
+//class MachinesHttpService @Inject()(private[this] val machinesService: MachinesService[DBIO, DBIO],
+//                                    private[this] val stackInterpreter: StackInterpreter)
 //    extends BaseHttpService(stackInterpreter)
 //    with KeysJsonSupport {
 //

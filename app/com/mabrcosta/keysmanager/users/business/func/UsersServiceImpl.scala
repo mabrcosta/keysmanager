@@ -13,8 +13,8 @@ import org.atnos.eff.EitherEffect.{left, right}
 import scala.concurrent.ExecutionContext
 
 class UsersServiceImpl[TDBIO[_], TDBOut[_]] @Inject()(
-    private val usersDal: UsersDal[TDBIO],
-    private val effectsDatabaseExecutor: EffectsDatabaseExecutor[TDBIO, TDBOut],
+    private[this] val usersDal: UsersDal[TDBIO],
+    private[this] val effectsDatabaseExecutor: EffectsDatabaseExecutor[TDBIO, TDBOut],
     implicit val executionContext: ExecutionContext)
     extends UsersService[TDBIO, TDBOut] {
 
