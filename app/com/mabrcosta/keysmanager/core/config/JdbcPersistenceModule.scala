@@ -1,20 +1,18 @@
 package com.mabrcosta.keysmanager.core.config
 
-import com.google.inject.Provides
+import com.google.inject.{AbstractModule, Provides}
 import com.mabrcosta.keysmanager.core.config.properties.Persistence
-import com.mabrcosta.keysmanager.core.persistence.util.{DatabaseMigrator, JdbcProfileAsyncDatabase, WithSessionJdbcBackend}
+import com.mabrcosta.keysmanager.core.persistence.util.{JdbcProfileAsyncDatabase, WithSessionJdbcBackend}
 import com.typesafe.config.Config
 import javax.inject.Singleton
-import net.codingwell.scalaguice.ScalaModule
 import slick.basic.DatabaseConfig
 import slick.jdbc.JdbcProfile
 
-class JdbcPersistenceModule extends ScalaModule {
+class JdbcPersistenceModule extends AbstractModule {
 
   override def configure(): Unit = {
-    bind[DatabaseMigrator].in(classOf[Singleton])
-    bind[JdbcProfileAsyncDatabase].in(classOf[Singleton])
-    bind[WithSessionJdbcBackend].in(classOf[Singleton])
+    bind(classOf[JdbcProfileAsyncDatabase]).in(classOf[Singleton])
+    bind(classOf[WithSessionJdbcBackend]).in(classOf[Singleton])
   }
 
   @Provides

@@ -1,18 +1,17 @@
 package com.mabrcosta.keysmanager.users.conf
 
-import com.google.inject.{Provides, TypeLiteral}
+import com.google.inject.{AbstractModule, Provides, TypeLiteral}
 import com.mabrcosta.keysmanager.core.persistence.util.EffDbExecutorId
 import com.mabrcosta.keysmanager.users.business.api.{KeysService, UsersGroupsService, UsersService}
 import com.mabrcosta.keysmanager.users.business.func.{KeysServiceImpl, UsersGroupsServiceImpl, UsersServiceImpl}
 import com.mabrcosta.keysmanager.users.persistence.api.{KeysDal, UsersDal, UsersGroupsDal, UsersGroupsUsersDal}
 import com.mabrcosta.keysmanager.users.persistence.func.{KeysRepository, UsersGroupsRepository, UsersGroupsUsersRepository, UsersRepository}
 import javax.inject.Singleton
-import net.codingwell.scalaguice.ScalaModule
 import slick.dbio.DBIO
 
 import scala.concurrent.ExecutionContext
 
-class UsersModule extends ScalaModule {
+class UsersModule extends AbstractModule {
 
   override def configure(): Unit = {
     bind(new TypeLiteral[KeysDal[DBIO]]() {}).to(classOf[KeysRepository]).in(classOf[Singleton])
