@@ -1,37 +1,47 @@
-# Extensible Effects Akka-Http Slick
-The Extensible Effects Akka-Http Slick is a simple json rest api to act as practical example of one way to use the Eff monad and extensible effects on an scala application.
+# KeysManager
+Simple ssh access manager through authorized keys
 
 It supports the following features:
 
-* Extensible effects, using [eff](https://github.com/atnos-org/eff)
-* Generic Data Access layer, using [slick-repo](https://github.com/gonmarques/slick-repo)
-* DI with Guice, using [scala-guice](https://github.com/codingwell/scala-guice)
-* Flyway for database schema evolution
-* Tests for routes and services with [ScalaTest](http://www.scalatest.org/)
+* Users and users groups
+* Machines and machines groups
+* Access defined through User <-> Machine, Users Group <-> Machine,  User <-> Machines Groups, Users Group <-> Machines Groups
+* Date time range limited access
 
-Utils: 
-
-* Typesafe config for property management
-* Typesafe Scala Logging (LazyLogging)
+Currently the access configuration  is only available directly through the database.
 
 #### Running
 
-The application is pre-configured to use a H2 In-memory database instance. 
+The application uses Typesafe Config and there is an example configuration file provided at `conf/application.conf.example`. 
+To supply it to the application it simply rename it to `application.conf` 
+or provide its path through the environment variable `-Dconfig.file=path/to/config-file`.
 
-So, to run you just have to:
+By default a Postgres database instance is used. The default database name is 'keysmanager'.
+This can be modified by updating the configuration file.
+
+Before starting the application create the database, the persistence schema is automatically applied at startup.
+
+
+Having both set up, you just have to:
 
 
         $ sbt run
         
         
+There is a access configuration mock data available at `etc/mock_data.sql`
         
+#### Setting a the machine authentication
+There is a provided authorized keys command script template available at `etc/authorizedKeysCommand.sh` 
+        
+To authenticate with the application authorized keys modify this template accordingly and copy it to the intended machine.
+A suggested location would be at `/usr/local/bin/authorizedKeysCommand.sh`.
 
-###### Another database alternative
-To use another type of Slick supported database, ensure you have your database server running, 
-create a new database on it and configure it on ```src/main/resources/application.conf``` accordingly.
+Give it execution permissions with `sudo chmod a+x /usr/local/bin/authorizedKeysCommand.sh`
 
-There's already a configuration example for postgreSQL on the file.
+Then in your machine `/etc/sshd_config` you need only add:
 
+    AuthorizedKeysCommand /usr/local/bin/authorizedKeysCommand.sh
+    AuthorizedKeysCommandUser nobody
 
 #### Testing
 
@@ -42,34 +52,8 @@ To run all tests:
 
 #### API Usage
 
-Creating data:
+Getting a hostname authorized_keys:
 ```
-curl -X POST \
-    http://localhost:9881/users/0d3fcc37-d330-4c7c-8d82-128235617d7d/keys \
-    -H 'Content-Type: application/json' \
-    -d '{"value":"the_key" }'
+curl http://localhost:9000/machines/10.10.10.1/authorized_keys
 ```
 
-Getting data: 
-```
-curl -X GET \
-  http://localhost:9881/users/0d3fcc37-d330-4c7c-8d82-128235617d7d/keys 
-```
-
-Deleting data:
-```
-curl -X DELETE \
-  http://localhost:9881/users/0d3fcc37-d330-4c7c-8d82-128235617d7d/keys/{key_uuid} \
-```
-
-### Extensible Effects Resources
-If you're interested in additional information on the Eff monad and extensible effects these are some good resources you might consider looking into:
-
-* Oleg Kiselyov's [Freer monads, more extensible effects](http://okmij.org/ftp/Haskell/extensible/more.pdf)
-* Eric Torreborre's talk [The Eff monad, one monad to rule them all](https://vimeo.com/channels/flatmap2016/165927840)
-* Eff library [documentation](http://atnos-org.github.io/eff/index.html)
-* [A Journey into Extensible Effects in Scala](https://rea.tech/author/jack-low/) by Jack Low
-
-### Credits
-
-To everyone working on the on the eff library, and also slick, akka-http, slick-repo, and ScalaTest. Please consider contributing to these projects and open-source in general. 
