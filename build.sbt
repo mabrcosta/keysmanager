@@ -12,6 +12,7 @@ libraryDependencies ++= {
   Seq(
     guice,
     evolutions,
+    ws,
     "com.typesafe.play"             %%  "play-slick"                  % playSlickV,
     "com.typesafe.play"             %%  "play-slick-evolutions"       % playSlickV,
     "com.byteslounge"               %%  "slick-repo"                  % "1.5.2",
