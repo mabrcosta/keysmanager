@@ -1,0 +1,22 @@
+version: '2'
+services:
+  appointment-scheduler:
+    image: keys-manager:1.0-0-8d8803fb6763408af4b1649982338c7fed9ada9e
+    restart: always
+    ports:
+    - "9000"
+    volumes:
+    - ./conf:/data
+    depends_on:
+    - db
+    links:
+    - db
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_DB: keysmanager
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+    volumes:
+    - ./database-data:/var/lib/postgresql/data
